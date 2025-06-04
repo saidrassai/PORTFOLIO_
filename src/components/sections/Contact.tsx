@@ -107,12 +107,14 @@ const Contact = () => {
       className="py-20 px-6 bg-white"
       data-theme="light"
     >
-      <div className="max-w-6xl mx-auto">
-        <h2 
+      <div className="max-w-6xl mx-auto">        <h2 
           ref={titleRef}
-          className="text-3xl md:text-4xl font-light text-center mb-16 tracking-tight"
+          className="text-[7.5rem] md:text-[4.5rem] font-black uppercase tracking-[-0.02em] mb-16 pointer-events-none whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] text-gray-900 text-center"
         >
-          Get In Touch
+          GET IN{' '}
+          <span className="bg-gradient-to-b from-[rgba(8,42,123,0.35)] to-[rgba(255,255,255,0)] bg-clip-text text-transparent">
+            TOUCH
+          </span>
         </h2>
         
         <div className="grid lg:grid-cols-2 gap-12">

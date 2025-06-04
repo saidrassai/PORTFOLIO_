@@ -175,9 +175,12 @@ const TechStack = () => {
         <div className="text-center mb-16">
           <h2 
             ref={titleRef}
-            className="text-3xl md:text-4xl font-light mb-4 text-gray-900"
+            className="text-[7.5rem] md:text-[4.5rem] font-black uppercase tracking-[-0.02em] mb-8 pointer-events-none whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] text-gray-900"
           >
-            Tech <span className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Stack</span>
+            TECH{' '}
+            <span className="bg-gradient-to-b from-[rgba(8,42,123,0.35)] to-[rgba(255,255,255,0)] bg-clip-text text-transparent">
+              STACK
+            </span>
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
             Technologies and tools I work with to bring ideas to life

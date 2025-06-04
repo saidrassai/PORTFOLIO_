@@ -195,12 +195,13 @@ const About = () => {
       {/* Simplified background */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-blue-50/30" />
       
-      <div className="max-w-6xl mx-auto relative z-10">
-        {/* Section Title */}
+      <div className="max-w-6xl mx-auto relative z-10">        {/* Section Title */}
         <div className="text-center mb-12">
-          <h2 ref={titleRef} className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Development
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600"> Changelog</span>
+          <h2 ref={titleRef} className="text-[7.5rem] md:text-[4.5rem] font-black uppercase tracking-[-0.02em] mb-8 pointer-events-none whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] text-gray-900">
+            DEVELOPMENT{' '}
+            <span className="bg-gradient-to-b from-[rgba(8,42,123,0.35)] to-[rgba(255,255,255,0)] bg-clip-text text-transparent">
+              CHANGELOG
+            </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
             A journey through skills, projects, and milestones that shaped my expertise in modern web development.
