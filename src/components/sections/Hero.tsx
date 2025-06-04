@@ -52,7 +52,7 @@ const Hero = () => {
           
           <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a 
-              href="#portfolio"
+              href="#projects"
               className="px-8 py-3 bg-white/90 backdrop-blur-sm text-gray-900 rounded-full hover:bg-white transition-all duration-300 font-medium shadow-lg"
             >
               View Work

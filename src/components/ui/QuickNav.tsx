@@ -4,11 +4,10 @@ import { ChevronUp, Calendar, Code, User, Briefcase } from 'lucide-react'
 const QuickNav = () => {
   const [activeSection, setActiveSection] = useState('hero')
   const [isVisible, setIsVisible] = useState(false)
-
   const sections = [
     { id: 'hero', label: 'Home', icon: User },
     { id: 'about', label: 'Changelog', icon: Calendar },
-    { id: 'portfolio', label: 'Releases', icon: Code },
+    { id: 'projects', label: 'Projects', icon: Code },
     { id: 'contact', label: 'Contact', icon: Briefcase }
   ]
 

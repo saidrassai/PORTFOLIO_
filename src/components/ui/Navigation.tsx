@@ -12,10 +12,8 @@ const Navigation = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrollY(window.scrollY);
-
-      // Update active section based on scroll position
-      const sections = ['home', 'about', 'portfolio', 'contact']
+      setScrollY(window.scrollY);      // Update active section based on scroll position
+      const sections = ['home', 'about', 'projects', 'contact']
       let foundSection = null;
       for (const section of sections) {
         const element = document.getElementById(section);
@@ -54,11 +52,10 @@ const Navigation = () => {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
-
   const navItems = [
     { label: 'Home', href: '#home' },
     { label: 'About', href: '#about' },
-    { label: 'Work', href: '#portfolio' },
+    { label: 'Projects', href: '#projects' },
     { label: 'Contact', href: '#contact' },
   ]
 
@@ -86,14 +83,13 @@ const Navigation = () => {
       }}
     >
       <div className="max-w-6xl mx-auto px-6 py-2">
-        <div className="flex items-center justify-between">          {/* Logo */}
-          <div
+        <div className="flex items-center justify-between">          {/* Logo */}          <div
             ref={logoRef}
             className={`font-medium text-lg tracking-tight cursor-pointer hover:scale-105 transition-transform duration-200 ${
               sectionTheme === 'dark' ? 'text-white' : 'text-neutral-900'
             }`}
           >
-            Portfolio
+            Changelog
           </div>
 
           {/* Desktop Navigation */}

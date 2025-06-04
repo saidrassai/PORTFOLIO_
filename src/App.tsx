@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import Hero from './components/sections/Hero'
 import About from './components/sections/About'
 import Projects from './components/sections/Projects'
-import Portfolio from './components/sections/Portfolio'
 import Contact from './components/sections/Contact'
 import Navigation from './components/ui/Navigation'
 import PageLoader from './components/ui/PageLoader'
@@ -22,8 +21,7 @@ function App() {
   const timelineSections = [
     { id: 'hero', label: 'Introduction', color: '#3B82F6' },
     { id: 'about', label: 'Timeline', color: '#8B5CF6' },
-    { id: 'projects', label: 'Team', color: '#F59E0B' },
-    { id: 'portfolio', label: 'Projects', color: '#06B6D4' },
+    { id: 'projects', label: 'Projects', color: '#F59E0B' },
     { id: 'contact', label: 'Contact', color: '#10B981' }
   ]
 
@@ -93,9 +91,6 @@ function App() {
         </section>
         <section id="projects">
           <Projects />
-        </section>
-        <section id="portfolio">
-          <Portfolio />
         </section>
         <section id="contact">
           <Contact />
