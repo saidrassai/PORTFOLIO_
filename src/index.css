@@ -1,0 +1,407 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color-scheme: light dark;
+  color: #0a0a0a;
+  background-color: #ffffff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #ffffff;
+  color: #0a0a0a;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #a3a3a3;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #737373;
+}
+
+/* Enhanced button hover effects */
+.btn-primary {
+  @apply bg-neutral-900 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300;
+  transform: translateY(0);
+}
+
+.btn-primary:hover {
+  @apply bg-neutral-800;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.btn-secondary {
+  @apply border border-neutral-300 text-neutral-700 px-6 py-3 rounded-lg font-medium transition-all duration-300;
+  transform: translateY(0);
+}
+
+.btn-secondary:hover {
+  @apply border-neutral-400 bg-neutral-50;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Floating animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: floatSlow 8s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse 4s ease-in-out infinite;
+}
+
+/* Enhanced form inputs */
+.form-input {
+  @apply w-full px-4 py-3 border border-neutral-200 rounded-lg focus:outline-none focus:border-neutral-400 transition-all duration-200;
+}
+
+.form-input:focus {
+  box-shadow: 0 0 0 3px rgba(163, 163, 163, 0.1);
+}
+
+.form-textarea {
+  @apply w-full px-4 py-3 border border-neutral-200 rounded-lg focus:outline-none focus:border-neutral-400 transition-all duration-200 resize-none;
+  min-height: 120px;
+}
+
+.form-textarea:focus {
+  box-shadow: 0 0 0 3px rgba(163, 163, 163, 0.1);
+}
+
+/* Card hover effects */
+.card-hover {
+  @apply transition-all duration-300;
+  transform: translateY(0);
+}
+
+.card-hover:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Text reveal animation */
+.text-reveal {
+  overflow: hidden;
+}
+
+.text-reveal span {
+  display: inline-block;
+  transform: translateY(100%);
+  transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.text-reveal.animate span {
+  transform: translateY(0);
+}
+
+/* Gradient text effect */
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Loading spinner */
+.spinner {
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #a3a3a3;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Backdrop blur utilities */
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+}
+
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+}
+
+/* Enhanced focus states */
+*:focus-visible {
+  outline: 2px solid #a3a3a3;
+  outline-offset: 2px;
+}
+
+/* Smooth transitions for all interactive elements */
+a, button, input, textarea {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #fafafa;
+    background-color: #0a0a0a;
+  }
+  
+  body {
+    background-color: #0a0a0a;
+    color: #fafafa;
+  }
+}
+
+/* Changelog Timeline Enhancements */
+.timeline-line {
+  background: linear-gradient(
+    180deg,
+    rgba(147, 197, 253, 0.3) 0%,
+    rgba(196, 181, 253, 0.5) 50%,
+    rgba(147, 197, 253, 0.3) 100%
+  );
+  box-shadow: 0 0 20px rgba(147, 197, 253, 0.3);
+}
+
+.changelog-entry {
+  position: relative;
+}
+
+.changelog-entry::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 4px;
+  height: 60%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(147, 197, 253, 0.2) 20%,
+    rgba(196, 181, 253, 0.3) 50%,
+    rgba(147, 197, 253, 0.2) 80%,
+    transparent 100%
+  );
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+.changelog-entry:nth-child(even)::before {
+  right: 50%;
+  margin-right: -2px;
+}
+
+.changelog-entry:nth-child(odd)::before {
+  left: 50%;
+  margin-left: -2px;
+}
+
+/* Project Timeline Enhancements */
+.project-entry {
+  position: relative;
+}
+
+.project-entry::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 2px;
+  height: 80%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(168, 85, 247, 0.1) 20%,
+    rgba(147, 197, 253, 0.2) 50%,
+    rgba(168, 85, 247, 0.1) 80%,
+    transparent 100%
+  );
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+.project-entry:nth-child(even)::after {
+  right: 50%;
+  margin-right: -1px;
+}
+
+.project-entry:nth-child(odd)::after {
+  left: 50%;
+  margin-left: -1px;
+}
+
+/* Enhanced Floating Elements */
+.floating-element {
+  animation: float 6s ease-in-out infinite;
+}
+
+.floating-element:nth-child(2) {
+  animation-delay: -2s;
+}
+
+.floating-element:nth-child(3) {
+  animation-delay: -4s;
+}
+
+.floating-element:nth-child(4) {
+  animation-delay: -6s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+  66% {
+    transform: translateY(-10px) rotate(-3deg);
+  }
+}
+
+/* Enhanced Card Hover Effects */
+.changelog-entry .bg-white,
+.project-entry .bg-white {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.changelog-entry .bg-white::before,
+.project-entry .bg-white::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(147, 197, 253, 0.1),
+    transparent
+  );
+  transition: left 0.6s;
+}
+
+.changelog-entry .bg-white:hover::before,
+.project-entry .bg-white:hover::before {
+  left: 100%;
+}
+
+/* Status Indicator Glow */
+.status-live {
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+  animation: pulse-green 2s infinite;
+}
+
+.status-development {
+  box-shadow: 0 0 10px rgba(234, 179, 8, 0.4);
+  animation: pulse-yellow 2s infinite;
+}
+
+.status-completed {
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+  animation: pulse-blue 2s infinite;
+}
+
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 10px rgba(34, 197, 94, 0.4); }
+  50% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.6); }
+}
+
+@keyframes pulse-yellow {
+  0%, 100% { box-shadow: 0 0 10px rgba(234, 179, 8, 0.4); }
+  50% { box-shadow: 0 0 20px rgba(234, 179, 8, 0.6); }
+}
+
+@keyframes pulse-blue {
+  0%, 100% { box-shadow: 0 0 10px rgba(59, 130, 246, 0.4); }
+  50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.6); }
+}
+
+/* Text Selection */
+::selection {
+  background: rgba(147, 197, 253, 0.3);
+  color: inherit;
+}
+
+/* Improved focus states for accessibility */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid rgba(147, 197, 253, 0.8);
+  outline-offset: 2px;
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .floating-element {
+    animation: none;
+  }
+  
+  .status-live,
+  .status-development,
+  .status-completed {
+    animation: none;
+  }
+}
