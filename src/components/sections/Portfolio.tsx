@@ -32,6 +32,7 @@ const Portfolio = () => {
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState(0)
   const [dragOffset, setDragOffset] = useState(0)
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({})
   const autoPlayRef = useRef<number | null>(null)
 
   const projects: ProjectEntry[] = [
@@ -194,9 +195,15 @@ const Portfolio = () => {
   const prevSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev - 1 + projects.length) % projects.length)
   }, [projects.length])
-
   const goToSlide = useCallback((index: number) => {
     setCurrentSlide(index)
+  }, [])
+
+  const toggleCardExpansion = useCallback((projectId: string) => {
+    setExpandedCards(prev => ({
+      ...prev,
+      [projectId]: !prev[projectId]
+    }))
   }, [])
   // Enhanced touch/drag handlers with improved sensitivity
   const handleDragStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
@@ -270,24 +277,10 @@ const Portfolio = () => {
       default: return Code
     }
   }
-  return (
-    <section ref={sectionRef} id="portfolio" className="min-h-screen py-20 px-6 bg-gradient-to-br from-slate-900 via-gray-900 to-black relative overflow-hidden" data-theme="dark">
-      {/* Enhanced futuristic background with parallax */}
+  return (    <section ref={sectionRef} id="portfolio" className="min-h-screen py-20 px-6 bg-gradient-to-br from-slate-900 via-gray-900 to-black relative overflow-hidden" data-theme="dark">
+      {/* Simplified background */}
       <div className="absolute inset-0">
-        <div 
-          className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl transition-transform duration-1000"
-          style={{ transform: `translateY(${currentSlide * -20}px) rotate(${currentSlide * 15}deg)` }}
-        />
-        <div 
-          className="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 rounded-full blur-3xl transition-transform duration-1000"
-          style={{ transform: `translateY(${currentSlide * 15}px) rotate(${currentSlide * -10}deg)` }}
-        />
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0iIzMzMzMzMyIgZmlsbC1vcGFjaXR5PSIwLjEiLz4KPC9zdmc+')] opacity-20" />
-        {/* Animated gradient overlay */}
-        <div 
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/5 to-transparent transition-transform duration-1000"
-          style={{ transform: `translateX(${currentSlide * 100}px)` }}
-        />
       </div>
       
       <div className="max-w-7xl mx-auto relative z-10">
@@ -304,12 +297,9 @@ const Portfolio = () => {
         </div>
 
         {/* Futuristic Carousel */}
-        <div ref={carouselRef} className="relative">
-          {/* Enhanced Carousel Container with hover effects */}
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-xl border border-gray-700/50 p-8 hover:border-gray-600/50 transition-all duration-500 group">
-            {/* Glow effect on hover */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-purple-500/5 to-cyan-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />
-              {/* Carousel Track with proper slide layout */}
+        <div ref={carouselRef} className="relative">          {/* Simplified Carousel Container */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-xl border border-gray-700/50 p-8 hover:border-gray-600/50 transition-all duration-500">
+            {/* Carousel Track with proper slide layout */}
             <div 
               ref={carouselTrackRef}
               className="flex transition-transform duration-500 ease-out cursor-grab active:cursor-grabbing"
@@ -353,18 +343,17 @@ const Portfolio = () => {
                                 <div className="w-2 h-2 bg-current rounded-full animate-pulse" />
                                 <span className="capitalize">{project.status}</span>
                               </div>
-                            </div>
-                            
-                            {/* Floating particles effect */}
+                            </div>                            
+                            {/* Simplified particles effect */}
                             <div className="absolute inset-0 opacity-30">
-                              {[...Array(6)].map((_, i) => (
+                              {[...Array(3)].map((_, i) => (
                                 <div
                                   key={i}
                                   className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
                                   style={{
-                                    left: `${20 + i * 15}%`,
-                                    top: `${30 + (i % 2) * 40}%`,
-                                    animationDelay: `${i * 0.5}s`,
+                                    left: `${30 + i * 20}%`,
+                                    top: `${40 + (i % 2) * 20}%`,
+                                    animationDelay: `${i * 0.8}s`,
                                     animationDuration: '2s'
                                   }}
                                 />
@@ -386,7 +375,22 @@ const Portfolio = () => {
                           </div>
                         </div>
 
-                        <p className="text-gray-300 text-lg leading-relaxed">{project.description}</p>
+                        <p className="text-gray-300 text-lg leading-relaxed">
+                          {expandedCards[project.id] 
+                            ? project.description 
+                            : project.description.length > 120 
+                              ? project.description.substring(0, 120) + '...'
+                              : project.description
+                          }
+                          {project.description.length > 120 && (
+                            <button
+                              onClick={() => toggleCardExpansion(project.id)}
+                              className="ml-2 text-blue-400 hover:text-blue-300 text-sm font-medium underline"
+                            >
+                              {expandedCards[project.id] ? 'Show less' : 'See more'}
+                            </button>
+                          )}
+                        </p>
 
                         {/* Features */}
                         <div className="space-y-3">
