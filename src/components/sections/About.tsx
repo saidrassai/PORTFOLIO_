@@ -208,36 +208,33 @@ const About = () => {
         </div>
 
         {/* Timeline */}
-        <div ref={timelineRef} className="relative">
-          {/* Timeline background line */}
+        <div ref={timelineRef} className="relative">          {/* Timeline background line */}
           <div 
             className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-gray-200 timeline-line" 
             style={{ 
-              height: `${changelogEntries.length > 0 ? (changelogEntries.length - 1) * 140 + 320 : 100}px` 
+              height: `${changelogEntries.length > 0 ? (changelogEntries.length - 1) * 224 + 400 : 100}px` 
             }} 
           />
           {/* Timeline progress line */}
           <div 
             className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-gradient-to-b from-blue-500 via-purple-500 to-blue-600 timeline-progress origin-top scale-y-0" 
             style={{ 
-              height: `${changelogEntries.length > 0 ? (changelogEntries.length - 1) * 140 + 320 : 100}px` 
+              height: `${changelogEntries.length > 0 ? (changelogEntries.length - 1) * 224 + 400 : 100}px` 
             }} 
           />
 
-          {/* Changelog entries */}
-          <div 
+          {/* Changelog entries */}          <div 
             className="relative" 
             style={{ 
-              height: `${changelogEntries.length > 0 ? (changelogEntries.length - 1) * 140 + 280 : 0}px` 
+              height: `${changelogEntries.length > 0 ? (changelogEntries.length - 1) * 224 + 360 : 0}px` 
             }}
           >
             {changelogEntries.map((entry, index) => {
               const IconComponent = entry.icon;
               // Place odd id (1,3,5...) on left, even id (2,4,6...) on right
-              const isLeft = parseInt(entry.id) % 2 === 1;
-              // Calculate staggered positioning - each card starts at half the height of the previous
-              const cardHeight = 280; // Approximate card height including spacing
-              const staggerOffset = cardHeight * 0.5; // Half height for staggering
+              const isLeft = parseInt(entry.id) % 2 === 1;              // Calculate staggered positioning - each card starts at more spacing to prevent overlap
+              const cardHeight = 320; // Increased card height including spacing
+              const staggerOffset = cardHeight * 0.7; // Increased spacing between cards
               const topPosition = index * staggerOffset;
 
               return (
@@ -245,15 +242,13 @@ const About = () => {
                   key={entry.id} 
                   className="absolute flex items-start w-full"
                   style={{ top: `${topPosition}px` }}
-                >
-                  {/* Centered icon on timeline - animated when in view */}
-                  <div className="timeline-icon absolute left-1/2 top-8 -translate-x-1/2 w-12 h-12 bg-white rounded-full border-4 border-blue-200 flex items-center justify-center shadow-lg z-20 opacity-0 scale-0 transition-all duration-500">
+                >                  {/* Centered icon on timeline - animated when in view */}
+                  <div className="timeline-icon absolute left-1/2 top-8 -translate-x-1/2 w-12 h-12 bg-white rounded-full border-4 border-blue-200 flex items-center justify-center shadow-lg z-30 opacity-0 scale-0 transition-all duration-500">
                     <IconComponent size={20} className="text-blue-600" />
                   </div>
-                  
-                  {/* Entry card, positioned left or right */}
+                    {/* Entry card, positioned left or right */}
                   <div className={`w-5/12 ${isLeft ? 'mr-auto pr-16 text-right' : 'ml-auto pl-16 text-left'}`}>
-                    <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 w-full">
+                    <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 w-full relative z-10">
                       {/* Header */}
                       <div className={`flex items-center gap-3 mb-4 ${isLeft ? 'justify-end' : 'justify-start'}`}>
                         <div className={`flex items-center gap-2 ${isLeft ? 'flex-row-reverse' : 'flex-row'}`}>
@@ -274,11 +269,10 @@ const About = () => {
                           : entry.description.length > 120 
                             ? entry.description.substring(0, 120) + '...'
                             : entry.description
-                        }
-                        {entry.description.length > 120 && (
+                        }                        {entry.description.length > 120 && (
                           <button
                             onClick={() => toggleCardExpansion(entry.id)}
-                            className="ml-2 text-blue-600 hover:text-blue-700 text-sm font-medium underline"
+                            className="ml-2 text-blue-600 hover:text-blue-700 text-sm font-medium underline relative z-20 cursor-pointer transition-colors duration-200 hover:bg-blue-50 px-1 py-0.5 rounded"
                           >
                             {expandedCards[entry.id] ? 'Show less' : 'See more'}
                           </button>

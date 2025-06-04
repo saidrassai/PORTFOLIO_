@@ -1,5 +1,6 @@
 import React from 'react';
-
+import { useStyle } from '../../hooks/useStyle';
+import OptimizedImage from '../ui/OptimizedImage';
 
 const TechStack = () => {
   const { currentStyle } = useStyle();
