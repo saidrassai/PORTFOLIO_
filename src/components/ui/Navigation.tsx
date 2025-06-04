@@ -13,7 +13,7 @@ const Navigation = () => {
   useEffect(() => {
     const handleScroll = () => {
       setScrollY(window.scrollY);      // Update active section based on scroll position
-      const sections = ['home', 'about', 'projects', 'contact']
+      const sections = ['home', 'about', 'techstack', 'projects', 'contact']
       let foundSection = null;
       for (const section of sections) {
         const element = document.getElementById(section);
@@ -47,14 +47,14 @@ const Navigation = () => {
         { opacity: 0, y: -10 },
         { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", delay: 0.4, stagger: 0.1 }
       )
-    }
-
-    window.addEventListener('scroll', handleScroll)
+    }    window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+  
   const navItems = [
     { label: 'Home', href: '#home' },
     { label: 'About', href: '#about' },
+    { label: 'Tech Stack', href: '#techstack' },
     { label: 'Projects', href: '#projects' },
     { label: 'Contact', href: '#contact' },
   ]
