@@ -46,7 +46,7 @@ const PageLoader = ({ onLoadComplete }: { onLoadComplete: () => void }) => {
     >
       <div className="text-center">
         <div ref={textRef} className="mb-8">
-          <h2 className="text-2xl font-light tracking-wide mb-2">Changelog</h2>
+          <h2 className="text-2xl font-light tracking-wide mb-2">WELCOME TO MY PORTFOLIO</h2>
           <p className="text-neutral-600 text-sm">{progress}%</p>
         </div>
         
