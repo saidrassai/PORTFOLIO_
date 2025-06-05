@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import OptimizedImage from '../ui/OptimizedImage'
+import ParallaxBackground from '../ui/ParallaxBackground'
+import ParallaxContent from '../ui/ParallaxContent'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -12,10 +14,12 @@ interface Technology {
 }
 
 const TechStack = () => {
-  const sectionRef = useRef<HTMLElement>(null)
+  const sectionRef = useRef<HTMLDivElement>(null)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const topRowRef = useRef<HTMLDivElement>(null)
   const bottomRowRef = useRef<HTMLDivElement>(null)
+  const topRowAnimation = useRef<gsap.core.Tween | null>(null)
+  const bottomRowAnimation = useRef<gsap.core.Tween | null>(null)
 
   const technologies: Technology[] = [
     // Frontend & Languages
@@ -32,6 +36,7 @@ const TechStack = () => {
     { name: '.NET', iconUrl: '/tech-icons/dotnet.svg', category: 'backend' },
     { name: 'FastAPI', iconUrl: '/tech-icons/fastapi-icon.svg', category: 'backend' },
     { name: 'Flask', iconUrl: '/tech-icons/flask.svg', category: 'backend' },
+    { name: 'LangChain', iconUrl: '/tech-icons/langchain.svg', category: 'backend' },
     
     // Databases
     { name: 'MongoDB', iconUrl: '/tech-icons/mongodb-icon.svg', category: 'database' },
@@ -69,188 +74,182 @@ const TechStack = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Title animation
+      // Simple title animation
       gsap.fromTo(titleRef.current,
-        { opacity: 0, y: 30 },
+        { opacity: 0, y: 50 },
         {
           opacity: 1,
           y: 0,
-          duration: 0.8,
+          duration: 1,
           ease: "power3.out",
           scrollTrigger: {
-            trigger: sectionRef.current,
+            trigger: titleRef.current,
             start: "top 80%",
             toggleActions: "play none none reverse"
           }
         }
       )
 
-      // Top row carousel animation (left to right)
+      // Simple continuous scrolling - Top row (left to right)
       if (topRowRef.current) {
-        const topRowWidth = topRowRef.current.scrollWidth
-        gsap.to(topRowRef.current, {
-          x: -(topRowWidth / 2),
-          duration: 40,
+        const iconWidth = 112
+        const totalWidth = topRowTechs.length * iconWidth
+        
+        gsap.set(topRowRef.current, { x: 0 })
+        topRowAnimation.current = gsap.to(topRowRef.current, {
+          x: -totalWidth,
+          duration: 20,
           ease: "none",
           repeat: -1,
-          modifiers: {
-            x: gsap.utils.unitize(x => parseFloat(x) % (topRowWidth / 2))
-          }
         })
       }
 
-      // Bottom row carousel animation (right to left)
+      // Simple continuous scrolling - Bottom row (right to left)
       if (bottomRowRef.current) {
-        const bottomRowWidth = bottomRowRef.current.scrollWidth
-        gsap.set(bottomRowRef.current, { x: -(bottomRowWidth / 2) })
-        gsap.to(bottomRowRef.current, {
+        const iconWidth = 112
+        const totalWidth = bottomRowTechs.length * iconWidth
+        
+        gsap.set(bottomRowRef.current, { x: -totalWidth })
+        bottomRowAnimation.current = gsap.to(bottomRowRef.current, {
           x: 0,
-          duration: 35,
+          duration: 20,
           ease: "none",
           repeat: -1,
-          modifiers: {
-            x: gsap.utils.unitize(x => parseFloat(x) % (bottomRowWidth / 2))
-          }
         })
       }
-
-      // Individual tech icons stagger animation on scroll
-      gsap.fromTo(".tech-icon",
-        { opacity: 0, scale: 0.8, y: 20 },
-        {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          duration: 0.5,
-          stagger: 0.05,
-          ease: "back.out(1.7)",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 70%",
-            toggleActions: "play none none reverse"
-          }
-        }
-      )
     }, sectionRef)
 
     return () => ctx.revert()
   }, [])
 
+  const handleIconHover = (isHovering: boolean) => {
+    if (isHovering) {
+      topRowAnimation.current?.pause()
+      bottomRowAnimation.current?.pause()
+    } else {
+      topRowAnimation.current?.resume()
+      bottomRowAnimation.current?.resume()
+    }
+  }
+
   const renderTechIcon = (tech: Technology, index: number) => (
     <div
       key={`${tech.name}-${index}`}
-      className="tech-icon flex-shrink-0 mx-4 group cursor-pointer"
+      className="flex-shrink-0 mx-6"
       title={tech.name}
+      onMouseEnter={() => handleIconHover(true)}
+      onMouseLeave={() => handleIconHover(false)}
     >
-      <div className="relative w-16 h-16 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center p-3 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl group-hover:-translate-y-2 group-hover:bg-white group-hover:border-blue-200">
-        {/* Subtle glow effect on hover */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        
+      <div className="w-16 h-16 bg-white rounded-2xl shadow-md border border-gray-200 flex items-center justify-center p-3">
         <OptimizedImage 
           src={tech.iconUrl} 
           alt={tech.name} 
-          className="w-full h-full object-contain relative z-10 filter grayscale group-hover:grayscale-0 transition-all duration-300 group-hover:drop-shadow-md" 
+          className="w-full h-full object-contain" 
         />
-        
-        {/* Tech name tooltip */}
-        <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20">
-          <div className="bg-gray-900 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap font-medium">
-            {tech.name}
-            <div className="absolute top-[-4px] left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
-          </div>
-        </div>
       </div>
     </div>
   )
 
   return (
-    <section 
+    <div 
       ref={sectionRef} 
-      id="techstack" 
-      className="py-20 bg-gradient-to-br from-gray-50 via-white to-blue-50/30 overflow-hidden" 
+      className="pb-20 overflow-hidden relative bg-white" 
       data-theme="light"
     >
-      <div className="container mx-auto px-6">
+      {/* Parallax Background Patterns */}
+      <ParallaxBackground pattern="circles" speed={0.2} opacity={0.04} color="rgba(99,102,241,0.5)" />
+      <ParallaxBackground pattern="dots" speed={-0.4} opacity={0.03} color="rgba(139,92,246,0.4)" />
+      
+      <div className="container mx-auto px-6 relative z-10">
         {/* Section Title */}
-        <div className="text-center mb-16">
-          <h2 
-            ref={titleRef}
-            className="text-[7.5rem] md:text-[4.5rem] font-black uppercase tracking-[-0.02em] mb-8 pointer-events-none whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] text-gray-900"
-          >
-            TECH{' '}
-            <span className="bg-gradient-to-b from-[rgba(8,42,123,0.35)] to-[rgba(255,255,255,0)] bg-clip-text text-transparent">
-              STACK
-            </span>
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Technologies and tools I work with to bring ideas to life
-          </p>
-        </div>
+        <ParallaxContent speed={0.8} scale={true}>
+          <div className="text-center mb-16">
+            <h2 
+              ref={titleRef}
+              className="text-[5.5rem] md:text-[3rem] font-black uppercase tracking-[-0.02em] mb-8 pointer-events-none whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] text-gray-900"
+            >
+              TECH{' '}
+              <span className="px-1 rounded" style={{ backgroundColor: '#FFEB3B', color: '#333446', paddingTop: '1px', paddingBottom: '1px' }}>
+                STACK
+              </span>
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Technologies and tools I work with to bring ideas to life
+            </p>
+          </div>
+        </ParallaxContent>
 
         {/* Carousel Container */}
-        <div className="relative">
-          {/* Top Row - Moving Left to Right */}
-          <div className="mb-8 overflow-hidden">
-            <div 
-              ref={topRowRef}
-              className="flex items-center will-change-transform"
-              style={{ width: 'fit-content' }}
-            >
-              {/* Duplicate the array for seamless loop */}
-              {[...topRowTechs, ...topRowTechs].map((tech, index) => 
-                renderTechIcon(tech, index)
-              )}
+        <ParallaxContent speed={0.95} direction="left">
+          <div className="relative max-w-none mx-auto overflow-hidden rounded-2xl bg-white border border-gray-200 py-8">
+            {/* Top Row - Simple infinite scroll (left to right) */}
+            <div className="mb-8 relative overflow-hidden">
+              <div className="flex items-center">
+                <div 
+                  ref={topRowRef}
+                  className="flex items-center"
+                  style={{ width: 'fit-content' }}
+                >
+                  {/* Duplicate arrays for seamless loop */}
+                  {[...topRowTechs, ...topRowTechs].map((tech, index) => 
+                    renderTechIcon(tech, index)
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* Bottom Row - Moving Right to Left */}
-          <div className="overflow-hidden">
-            <div 
-              ref={bottomRowRef}
-              className="flex items-center will-change-transform"
-              style={{ width: 'fit-content' }}
-            >
-              {/* Duplicate the array for seamless loop */}
-              {[...bottomRowTechs, ...bottomRowTechs].map((tech, index) => 
-                renderTechIcon(tech, index)
-              )}
+            {/* Bottom Row - Simple infinite scroll (right to left) */}
+            <div className="relative overflow-hidden">
+              <div className="flex items-center">
+                <div 
+                  ref={bottomRowRef}
+                  className="flex items-center"
+                  style={{ width: 'fit-content' }}
+                >
+                  {/* Duplicate arrays for seamless loop */}
+                  {[...bottomRowTechs, ...bottomRowTechs].map((tech, index) => 
+                    renderTechIcon(tech, index)
+                  )}
+                </div>
+              </div>
             </div>
           </div>
+        </ParallaxContent>
 
-          {/* Fade edges */}
-          <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-gray-50 to-transparent pointer-events-none z-10"></div>
-          <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-gray-50 to-transparent pointer-events-none z-10"></div>
-        </div>
-
-        {/* Statistics */}
-        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          <div className="group">
-            <div className="text-2xl md:text-3xl font-light text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300">
-              {technologies.length}+
+        {/* Stats Section */}
+        <ParallaxContent speed={1.1} direction="up">
+          <div className="mt-20 text-center">
+            <h3 className="text-2xl font-semibold text-gray-900 mb-8">By The Numbers</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
+              <div className="group">
+                <div className="text-2xl md:text-3xl font-light text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                  25+
+                </div>
+                <div className="text-gray-600 text-sm font-medium">Technologies</div>
+              </div>
+              <div className="group">
+                <div className="text-2xl md:text-3xl font-light text-gray-900 mb-2 group-hover:text-purple-600 transition-colors duration-300">
+                  6
+                </div>
+                <div className="text-gray-600 text-sm font-medium">Categories</div>
+              </div>
+              <div className="group">
+                <div className="text-2xl md:text-3xl font-light text-gray-900 mb-2 group-hover:text-green-600 transition-colors duration-300">
+                  50+
+                </div>
+                <div className="text-gray-600 text-sm font-medium">Projects</div>
+              </div>
+              <div className="group">
+                <div className="text-2xl md:text-3xl font-light text-gray-900 mb-2 group-hover:text-orange-600 transition-colors duration-300">
+                  4+
+                </div>
+                <div className="text-gray-600 text-sm font-medium">Years</div>
+              </div>
             </div>
-            <div className="text-gray-600 text-sm font-medium">Technologies</div>
           </div>
-          <div className="group">
-            <div className="text-2xl md:text-3xl font-light text-gray-900 mb-2 group-hover:text-purple-600 transition-colors duration-300">
-              6
-            </div>
-            <div className="text-gray-600 text-sm font-medium">Categories</div>
-          </div>
-          <div className="group">
-            <div className="text-2xl md:text-3xl font-light text-gray-900 mb-2 group-hover:text-green-600 transition-colors duration-300">
-              50+
-            </div>
-            <div className="text-gray-600 text-sm font-medium">Projects</div>
-          </div>
-          <div className="group">
-            <div className="text-2xl md:text-3xl font-light text-gray-900 mb-2 group-hover:text-orange-600 transition-colors duration-300">
-              4+
-            </div>
-            <div className="text-gray-600 text-sm font-medium">Years</div>
-          </div>
-        </div>
+        </ParallaxContent>
       </div>
-    </section>
+    </div>
   )
 }
 

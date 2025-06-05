@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Send, Mail, MapPin, Phone } from 'lucide-react'
+import { Send, Mail, MapPin, Phone, Github, Linkedin } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -30,7 +30,7 @@ const Contact = () => {
           ease: "power3.out",
           scrollTrigger: {
             trigger: titleRef.current,
-            start: "top 80%",
+            start: "top 90%",
             toggleActions: "play none none reverse"
           }
         }
@@ -66,8 +66,7 @@ const Contact = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
-    
+    setIsSubmitting(true)    
     // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 2000))
     
@@ -83,36 +82,45 @@ const Contact = () => {
     {
       icon: Mail,
       label: 'Email',
-      value: 'hello@example.com',
-      href: 'mailto:hello@example.com'
+      value: 'rassai.said@ensi.ma',
+      href: 'mailto:rassai.said@ensi.ma'
     },
     {
       icon: Phone,
       label: 'Phone',
-      value: '+1 (555) 123-4567',
-      href: 'tel:+15551234567'
+      value: '+212 6-04-18-65-86',
+      href: 'tel:+212604186586'
     },
     {
       icon: MapPin,
       label: 'Location',
-      value: 'San Francisco, CA',
+      value: 'Tangier, MA',
       href: '#'
+    },
+    {
+      icon: Github,
+      label: 'GitHub',
+      value: 'saidrassai',
+      href: 'https://github.com/saidrassai'
+    },
+    {
+      icon: Linkedin,
+      label: 'LinkedIn',
+      value: 'Connect with me',
+      href: 'https://www.linkedin.com/'
     }
   ]
 
-  return (
-    <section 
+  return (    <section 
       id="contact" 
       ref={sectionRef}
-      className="py-20 px-6 bg-white"
+      className="pb-20 px-6 bg-white"
       data-theme="light"
     >
       <div className="max-w-6xl mx-auto">        <h2 
           ref={titleRef}
-          className="text-[7.5rem] md:text-[4.5rem] font-black uppercase tracking-[-0.02em] mb-16 pointer-events-none whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] text-gray-900 text-center"
-        >
-          GET IN{' '}
-          <span className="bg-gradient-to-b from-[rgba(8,42,123,0.35)] to-[rgba(255,255,255,0)] bg-clip-text text-transparent">
+          className="text-[5.5rem] md:text-[3rem] font-black uppercase tracking-[-0.02em] mb-16 pointer-events-none whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] text-gray-900 text-center"
+        >          GET IN{' '}          <span className="px-1 rounded" style={{ backgroundColor: '#FFEB3B', color: '#333446', paddingTop: '1px', paddingBottom: '1px' }}>
             TOUCH
           </span>
         </h2>
@@ -123,15 +131,14 @@ const Contact = () => {
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-2">
                 Name
-              </label>
-              <input
+              </label>              <input
                 type="text"
                 id="name"
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-transparent outline-none transition-all"
+                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                 placeholder="Your name"
               />
             </div>
@@ -147,7 +154,7 @@ const Contact = () => {
                 value={formData.email}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-transparent outline-none transition-all"
+                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                 placeholder="your.email@example.com"
               />
             </div>
@@ -155,23 +162,20 @@ const Contact = () => {
             <div>
               <label htmlFor="message" className="block text-sm font-medium text-neutral-700 mb-2">
                 Message
-              </label>
-              <textarea
+              </label>              <textarea
                 id="message"
                 name="message"
                 value={formData.message}
                 onChange={handleInputChange}
                 required
                 rows={6}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-transparent outline-none transition-all resize-none"
+                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
                 placeholder="Tell me about your project..."
               />
-            </div>
-
-            <button
+            </div>            <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full px-8 py-3 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors duration-300 font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300 font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>
@@ -203,7 +207,7 @@ const Contact = () => {
                 <a
                   key={index}
                   href={item.href}
-                  className="flex items-center gap-4 p-4 rounded-lg hover:bg-neutral-50 transition-colors group"
+                  className="flex items-center gap-4 p-1.5 rounded-lg hover:bg-neutral-50 transition-colors group"
                 >
                   <div className="p-2 bg-neutral-100 rounded-lg group-hover:bg-neutral-200 transition-colors">
                     <item.icon size={20} className="text-neutral-600" />

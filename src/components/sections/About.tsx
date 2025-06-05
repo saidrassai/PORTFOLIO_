@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Calendar, MapPin, Code, Briefcase, GraduationCap, Rocket, Leaf, Car, Atom } from 'lucide-react'
+import { Calendar, MapPin, Code,  GraduationCap, Rocket,  Car,  Sun } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -9,7 +9,7 @@ interface ChangelogEntry {
   id: string
   date: string
   version: string
-  type: 'Skill' | 'Project' | 'Experience' | 'Education' | 'Milestone'
+  type: 'Skill' | 'Project' | 'Experience' | 'Education' | 'Milestone' | 'Certificate'
   title: string
   description: string
   tags: string[]
@@ -27,78 +27,80 @@ const About = () => {
   const changelogEntries: ChangelogEntry[] = [
     {
       id: '1',
-      date: 'NOW',
-      version: 'v3.2.0',
+      date: 'PRESENT',
+      version: 'ENSI : School of New Sciences & Engineering',
       type: 'Education',
       title: 'Fourth-year Software Engineering student',
       description: 'I am currently in my fourth year Engineering degree, majoring in Big Data and Artificial Intelligence. I am passionate about the evolution of AI and eager to apply my skills to practical and innovative projects.',
-      tags: ['FullStack MERN / MEAN', 'AI/ML', 'Big Data', 'DevOps/MlOps'],
+      tags: ['MERN / MEAN', 'AI/ML', 'Big Data', 'DevOps/MLOps'],
       location: 'Tangier',
       icon: Code
     },
     {
       id: '2',
       date: '2017-2020',
-      version: 'v3.1.5',
+      version: 'faculty of sciences - University Ibn Tofail',
       type: 'Education',
       title: "Bachelor's degree in Renewable Energy",
-      description: 'Mastered React Three Fiber and Three.js for creating immersive web experiences. Implemented complex shaders and performance optimizations.',
-      tags: ['Three.js', 'WebGL', 'Shaders', 'Performance'],
-      location: 'Kenitra',
-      icon: Leaf
+      description:"Pursued a Master's in Renewable Energy, acquiring strong knowledge in sustainable technologies and energy systems. Completed a 6-month traineeship in the Power-to-X field and served as Head Chef for Anglophone teams in the Solar Decathlon Africa competition.",
+      tags: ['sustainable Energy', 'Energy efficiency', 'Solar Decathlon Africa',"IRESEN",'Green Energy Park'],
+      location: 'Kenitra / Benguerir',
+      icon: Sun
     },
     {
       id: '3',
-      date: '2024.08',
-      version: 'v3.1.0',
-      type: 'Project',
-      title: 'Interactive Portfolio Platform',
-      description: 'Built a modern portfolio platform with smooth animations, 3D graphics, and responsive design. Features include real-time animations and interactive elements.',
-      tags: ['React', 'GSAP', 'Tailwind', 'Vite'],
+      date: '2016-2017',
+      version: 'ENSAM : High National School Of Arts and Crafts',
+      type: 'Certificate',
+      title: 'Certificate of Professional Competence in Car Manufacturing & Embedded Electronics',
+      description: 'Completed hands-on training and coursework focused on modern automotive manufacturing techniques and embedded electronic systems.',
+      tags: ['Embedded Systems', 'Car Manufacturing', 'Microcontrollers', 'Sensors & Actuators', 'Diagnostics',],
+      location: 'Rabat',
       icon: Car
     },
+
     {
       id: '4',
-      date: '2024.06',
-      version: 'v3.0.8',
-      type: 'Skill',
-      title: 'Animation & Motion Design',
-      description: 'Advanced proficiency in GSAP, Framer Motion, and CSS animations. Creating smooth, performant animations that enhance user experience.',
-      tags: ['GSAP', 'Framer Motion', 'CSS', 'Performance'],
-      icon: Atom
-    },
-    {
-      id: '5',
-      date: '2024.03',
-      version: 'v3.0.0',
-      type: 'Experience',
-      title: 'Senior Frontend Developer',
-      description: 'Led frontend development for multiple high-traffic applications. Implemented design systems and improved performance by 40%.',
-      tags: ['Leadership', 'React', 'Performance', 'Architecture'],
-      location: 'Tech Company',
-      icon: Briefcase
-    },
-    {
-      id: '6',
-      date: '2023.11',
-      version: 'v2.5.0',
-      type: 'Skill',
-      title: 'Modern TypeScript & React Patterns',
-      description: 'Deep expertise in TypeScript, React hooks, and modern patterns. Focus on type safety, performance, and maintainable code architecture.',
-      tags: ['TypeScript', 'React', 'Hooks', 'Architecture'],
-      icon: Code
-    },
-    {
-      id: '7',
-      date: '2023.08',
-      version: 'v2.3.0',
+      date: '2012-2015',
+      version: 'Faculty of Sciences - University Mohammed V',
       type: 'Education',
-      title: 'Advanced Web Development Certification',
-      description: 'Completed comprehensive program covering modern web technologies, performance optimization, and best practices in software development.',
-      tags: ['Certification', 'Web Development', 'Best Practices'],
-      location: 'Online Academy',
+      title: 'Bachelor of Science in Material Physics',
+      description: 'Acquired a solid foundation in material properties, thermodynamics, and quantum mechanics. Conducted research on advanced materials for energy applications.',
+      tags: ['Math', 'Physics', 'Computer Science', 'Electronics'],
+      location: 'Rabat',
       icon: GraduationCap
-    }
+    },
+    //    {
+    //  id: '5',
+    //  date: '2024.06',
+    //version: 'v3.0.8',
+    //  type: 'Skill',
+    //  title: 'Animation & Motion Design',
+    //  description: 'Advanced proficiency in GSAP, Framer Motion, and CSS animations. Creating smooth, performant animations that enhance user experience.',
+    //  tags: ['GSAP', 'Framer Motion', 'CSS', 'Performance'],
+    //  icon: Atom
+    //},
+   // {
+     // id: '6',
+      //date: '2023.11',
+      //version: 'v2.5.0',
+    //  type: 'Skill',
+    //  title: 'Modern TypeScript & React Patterns',
+    //  description: 'Deep expertise in TypeScript, React hooks, and modern patterns. Focus on type safety, performance, and maintainable code architecture.',
+    //  tags: ['TypeScript', 'React', 'Hooks', 'Architecture'],
+    //  icon: Code
+    //},
+   // {
+     // id: '7',
+    //  date: '2023.08',
+     // version: 'v2.3.0',
+    //  type: 'Education',
+    //  title: 'Advanced Web Development Certification',
+    //  description: 'Completed comprehensive program covering modern web technologies, performance optimization, and best practices in software development.',
+    //  tags: ['Certification', 'Web Development', 'Best Practices'],
+    //  location: 'Online Academy',
+    //  icon: GraduationCap
+   // }
   ]
   const toggleCardExpansion = (entryId: string) => {
     setExpandedCards(prev => ({
@@ -183,28 +185,25 @@ const About = () => {
     switch (type) {
       case 'Milestone': return 'bg-purple-100 text-purple-800 border-purple-200'
       case 'Skill': return 'bg-blue-100 text-blue-800 border-blue-200'
+      case 'Certificate': return 'bg-blue-100 text-blue-800 border-blue-200'
       case 'Project': return 'bg-green-100 text-green-800 border-green-200'
       case 'Experience': return 'bg-orange-100 text-orange-800 border-orange-200'
-      case 'Education': return 'bg-indigo-100 text-indigo-800 border-indigo-200'
+      case 'Education': return 'bg-yellow-100 text-yellow-800 border-yellow-200'
       default: return 'bg-gray-100 text-gray-800 border-gray-200'
     }
   }
-
   return (
-    <section ref={sectionRef} id="about" className="min-h-screen py-20 px-6 bg-white relative overflow-hidden" data-theme="light">
+    <section ref={sectionRef} id="about" className="min-h-screen pb-20 px-6 bg-white relative overflow-hidden" data-theme="light">
       {/* Simplified background */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-blue-50/30" />
       
       <div className="max-w-6xl mx-auto relative z-10">        {/* Section Title */}
-        <div className="text-center mb-12">
-          <h2 ref={titleRef} className="text-[7.5rem] md:text-[4.5rem] font-black uppercase tracking-[-0.02em] mb-8 pointer-events-none whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] text-gray-900">
-            DEVELOPMENT{' '}
-            <span className="bg-gradient-to-b from-[rgba(8,42,123,0.35)] to-[rgba(255,255,255,0)] bg-clip-text text-transparent">
-              CHANGELOG
+        <div className="text-center mb-12">          <h2 ref={titleRef} className="text-[5.5rem] md:text-[3rem] font-black uppercase tracking-[-0.02em] mb-8 pointer-events-none whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] text-gray-900">            ACADIMIC{' '}            <span className="px-1 rounded" style={{ backgroundColor: '#FFEB3B', color: '#333446', paddingTop: '1px', paddingBottom: '1px' }}>
+              JOURNEY
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-            A journey through skills, projects, and milestones that shaped my expertise in modern web development.
+            A journey through skills, projects, and milestones that shaped my expertise in critical thinking & problem-solving.
           </p>
         </div>
 
@@ -317,7 +316,7 @@ const About = () => {
         <div className="text-center mt-20">
           <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-full border border-blue-100">
             <Rocket size={16} className="text-blue-600" />
-            <span className="text-sm font-medium text-gray-700">Currently building the next version...</span>
+            <span className="text-sm font-medium text-gray-700">when you stop learning you start dying...</span>
           </div>
         </div>
       </div>

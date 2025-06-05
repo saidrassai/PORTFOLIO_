@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react'
 import { ExternalLink, Github, Code, Globe, Smartphone, Database, Palette, Activity } from 'lucide-react'
+import ParallaxBackground from '../ui/ParallaxBackground'
+import ParallaxContent from '../ui/ParallaxContent'
+import ParallaxFloatingElements from '../ui/ParallaxFloatingElements'
+import Portfolio_Image from '../../../public/Project_Photos/portolio.png'
 
 interface Project {
   id: string
@@ -21,12 +25,12 @@ const Projects = () => {
       title: 'Interactive 3D Portfolio',
       description: 'A modern portfolio featuring React Three Fiber, GSAP animations, and responsive design. Built with performance and accessibility in mind, showcasing cutting-edge web technologies.',
       github: 'https://github.com/username/portfolio',
-      visit: 'https://portfolio-demo.com',
+      visit: 'https://rassaisaid.me',
       tech: ['React', 'Three.js', 'TypeScript', 'GSAP', 'Tailwind CSS'],
       status: 'live',
       version: 'v3.2.0',
       category: 'web',
-      image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=3687&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      image: Portfolio_Image
     },
     {
       id: 'proj_002',
@@ -38,7 +42,7 @@ const Projects = () => {
       status: 'completed',
       version: 'v2.1.5',
       category: 'fullstack',
-      image: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=3870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      image: Portfolio_Image
     },
     {
       id: 'proj_003',
@@ -50,7 +54,7 @@ const Projects = () => {
       status: 'development',
       version: 'v1.8.3',
       category: 'mobile',
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cHJvZmVzc2lvbmFsJTIwcGVvcGxlfGVufDB8fDB8fHww"
+      image: Portfolio_Image
     },
     {
       id: 'proj_004',
@@ -62,7 +66,7 @@ const Projects = () => {
       status: 'live',
       version: 'v4.0.1',
       category: 'design',
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8cHJvZmVzc2lvbmFsJTIwcGVvcGxlfGVufDB8fDB8fHww"
+      image: Portfolio_Image
     },
     {
       id: 'proj_005',
@@ -74,7 +78,7 @@ const Projects = () => {
       status: 'live',
       version: 'v3.5.2',
       category: 'ai',
-      image: "https://images.unsplash.com/photo-1655249481446-25d575f1c054?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjh8fHByb2Zlc3Npb25hbCUyMHBlb3BsZXxlbnwwfHwwfHx8MA%3D%3D"
+      image: Portfolio_Image
     },
     {
       id: 'proj_006',
@@ -86,7 +90,7 @@ const Projects = () => {
       status: 'development',
       version: 'v0.9.1',
       category: 'web',
-      image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=3687&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      image: Portfolio_Image
     }
   ]
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -229,26 +233,36 @@ const Projects = () => {
           updateCarousel(currentIndex + 1)
         } else {
           updateCarousel(currentIndex - 1)
-        }
-      }
+        }      }
     }
 
-    document.addEventListener('touchstart', handleTouchStart)
-    document.addEventListener('touchend', handleTouchEnd)
+    document.addEventListener('touchstart', handleTouchStart);
+    document.addEventListener('touchend', handleTouchEnd);
 
     return () => {
       document.removeEventListener('touchstart', handleTouchStart)
       document.removeEventListener('touchend', handleTouchEnd)
     }
   }, [currentIndex])
+  
   return (
-    <section id="projects" className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden py-20">
-      {/* Title */}
-      <h1 className="text-[7.5rem] font-black uppercase tracking-[-0.02em] mb-8 pointer-events-none whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] bg-gradient-to-b from-[rgba(8,42,123,0.35)] to-[rgba(255,255,255,0)] bg-clip-text text-transparent md:text-[4.5rem]">
-        PROJECTS
-      </h1>
+    <div className="min-h-screen flex flex-col items-center justify-center overflow-hidden pb-20 relative bg-white">
+      {/* Parallax Background Patterns */}
+      <ParallaxBackground pattern="dots" speed={0.2} opacity={0.03} color="rgba(59,130,246,0.4)" />
+      <ParallaxBackground pattern="lines" speed={-0.3} opacity={0.02} color="rgba(139,92,246,0.3)" />
+      
+      {/* Floating Elements */}
+      <ParallaxFloatingElements />
+      
+      <div className="relative z-10 w-full flex flex-col items-center">
+        {/* Title */}        <ParallaxContent speed={0.8} scale={true}>
+          <h1 className="text-[7.5rem] font-black uppercase tracking-[-0.02em] mb-8 pointer-events-none whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] text-gray-900 md:text-[4.5rem]">
+            <span className="px-1 rounded" style={{ backgroundColor: '#FFEB3B', color: '#333446', paddingTop: '1px', paddingBottom: '1px' }}>PROJECTS</span>
+          </h1>
+        </ParallaxContent>
 
-      {/* Carousel Container */}
+        {/* Carousel Container */}
+        <ParallaxContent speed={0.95} direction="up">
       <div className="w-full max-w-[1200px] h-[450px] relative perspective-[1000px]">
         {/* Carousel Track */}
         <div 
@@ -268,15 +282,14 @@ const Projects = () => {
                 onClick={() => updateCarousel(index)}
                 onMouseEnter={() => setHoveredCard(project.id)}
                 onMouseLeave={() => setHoveredCard(null)}
-              >
-                {/* Card Background Image */}
+              >                {/* Card Background Image */}
                 <div className="absolute inset-0">
                   <img
                     src={project.image}
                     alt={project.title}
                     className={getImageStyles(position)}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-gray-800/20 to-transparent" />
                 </div>
 
                 {/* Category Badge */}
@@ -339,12 +352,10 @@ const Projects = () => {
                   <p className="text-sm text-white/80 mb-3 leading-relaxed">
                     {project.tech.slice(0, 3).join(' • ')}
                     {project.tech.length > 3 && ' • ...'}
-                  </p>
-
-                  {/* Description (on hover for center card) */}
+                  </p>                  {/* Description (on hover for center card) */}
                   {isCenter && hoveredCard === project.id && (
-                    <div className="absolute inset-x-4 bottom-4 p-3 bg-black/80 backdrop-blur-sm rounded-lg border border-white/20 transform transition-all duration-300 ease-out animate-in slide-in-from-bottom-2">
-                      <p className="text-sm text-white/90 leading-relaxed">
+                    <div className="absolute inset-x-4 bottom-4 p-3 bg-white/95 backdrop-blur-sm rounded-lg border border-gray-200/50 shadow-lg transform transition-all duration-300 ease-out animate-in slide-in-from-bottom-2">
+                      <p className="text-sm text-gray-800 leading-relaxed">
                         {project.description}
                       </p>
                     </div>
@@ -353,18 +364,16 @@ const Projects = () => {
               </div>
             )
           })}
-        </div>
-
-        {/* Navigation Arrows */}
+        </div>        {/* Navigation Arrows */}
         <button
-          className="absolute top-1/2 left-5 transform -translate-y-1/2 bg-[rgba(8,42,123,0.6)] text-white w-12 h-12 rounded-full flex items-center justify-center cursor-pointer z-20 transition-all duration-300 text-2xl border-none outline-none hover:bg-[rgba(0,0,0,0.8)] hover:scale-110 backdrop-blur-sm"
+          className="absolute top-1/2 left-5 transform -translate-y-1/2 bg-white/90 text-gray-800 w-12 h-12 rounded-full flex items-center justify-center cursor-pointer z-20 transition-all duration-300 text-2xl border-none outline-none hover:bg-white hover:scale-110 backdrop-blur-sm shadow-lg border border-gray-200/50"
           onClick={() => updateCarousel(currentIndex - 1)}
           aria-label="Previous project"
         >
           ‹
         </button>
         <button
-          className="absolute top-1/2 right-5 transform -translate-y-1/2 bg-[rgba(8,42,123,0.6)] text-white w-12 h-12 rounded-full flex items-center justify-center cursor-pointer z-20 transition-all duration-300 text-2xl border-none outline-none hover:bg-[rgba(0,0,0,0.8)] hover:scale-110 backdrop-blur-sm"
+          className="absolute top-1/2 right-5 transform -translate-y-1/2 bg-white/90 text-gray-800 w-12 h-12 rounded-full flex items-center justify-center cursor-pointer z-20 transition-all duration-300 text-2xl border-none outline-none hover:bg-white hover:scale-110 backdrop-blur-sm shadow-lg border border-gray-200/50"
           onClick={() => updateCarousel(currentIndex + 1)}
           aria-label="Next project"
         >
@@ -401,11 +410,12 @@ const Projects = () => {
                 : 'bg-[rgba(8,42,123,0.2)] hover:bg-[rgba(8,42,123,0.4)]'
             }`}
             onClick={() => updateCarousel(index)}
-            aria-label={`Go to project ${index + 1}`}
-          />
-        ))}
+            aria-label={`Go to project ${index + 1}`}        
+             />        ))}
       </div>
-    </section>
+        </ParallaxContent>
+      </div>
+    </div>
   )
 }
 

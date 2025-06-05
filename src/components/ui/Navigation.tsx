@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, Github, Linkedin, Mail } from 'lucide-react'
 import { gsap } from 'gsap'
 
 const Navigation = () => {
@@ -83,13 +83,13 @@ const Navigation = () => {
       }}
     >
       <div className="max-w-6xl mx-auto px-6 py-2">
-        <div className="flex items-center justify-between">          {/* Logo */}          <div
+        <div className="flex items-center justify-between">            {/* Logo */}          <div
             ref={logoRef}
-            className={`font-medium text-lg tracking-tight cursor-pointer hover:scale-105 transition-transform duration-200 ${
-              sectionTheme === 'dark' ? 'text-white' : 'text-neutral-900'
+            className={`text-lg font-light tracking-wide cursor-pointer hover:scale-105 transition-all duration-300 ${
+              sectionTheme === 'dark' ? 'text-white hover:text-gray-100' : 'text-neutral-900 hover:text-neutral-800'
             }`}
           >
-            Changelog
+            WELCOME TO RASSAISAID.ME
           </div>
 
           {/* Desktop Navigation */}
@@ -111,7 +111,47 @@ const Navigation = () => {
                   activeSection === item.href.slice(1) ? 'w-full' : 'w-0 group-hover:w-full'
                 }`} />
               </a>
-            ))}
+            ))}          </div>
+
+          {/* Social Media Icons */}
+          <div className="hidden md:flex items-center space-x-4 ml-6">
+            <a
+              href="https://github.com/saidrassai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`p-2 rounded-lg transition-all duration-200 ${
+                sectionTheme === 'dark' 
+                  ? 'text-gray-300 hover:text-white hover:bg-white/10' 
+                  : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
+              }`}
+              title="GitHub"
+            >
+              <Github size={18} />
+            </a>
+            <a
+              href="https://www.linkedin.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`p-2 rounded-lg transition-all duration-200 ${
+                sectionTheme === 'dark' 
+                  ? 'text-gray-300 hover:text-white hover:bg-white/10' 
+                  : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
+              }`}
+              title="LinkedIn"
+            >
+              <Linkedin size={18} />
+            </a>
+            <a
+              href="mailto:rassai.said@ensi.ma"
+              className={`p-2 rounded-lg transition-all duration-200 ${
+                sectionTheme === 'dark' 
+                  ? 'text-gray-300 hover:text-white hover:bg-white/10' 
+                  : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
+              }`}
+              title="Email"
+            >
+              <Mail size={18} />
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -125,8 +165,7 @@ const Navigation = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 py-4 border-t border-neutral-200">
-            {navItems.map((item) => (
+          <div className="md:hidden mt-4 py-4 border-t border-neutral-200">            {navItems.map((item) => (
               <a
                 key={item.label}
                 href={item.href}
@@ -138,6 +177,47 @@ const Navigation = () => {
                 {item.label}
               </a>
             ))}
+            
+            {/* Mobile Social Media Icons */}
+            <div className="flex items-center space-x-4 mt-4 pt-4 border-t border-neutral-200">
+              <a
+                href="https://github.com/saidrassai"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`p-2 rounded-lg transition-all duration-200 ${
+                  sectionTheme === 'dark' 
+                    ? 'text-gray-300 hover:text-white hover:bg-white/10' 
+                    : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
+                }`}
+                title="GitHub"
+              >
+                <Github size={20} />
+              </a>
+              <a
+                href="https://www.linkedin.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`p-2 rounded-lg transition-all duration-200 ${
+                  sectionTheme === 'dark' 
+                    ? 'text-gray-300 hover:text-white hover:bg-white/10' 
+                    : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
+                }`}
+                title="LinkedIn"
+              >
+                <Linkedin size={20} />
+              </a>
+              <a
+                href="mailto:rassai.said@ensi.ma"
+                className={`p-2 rounded-lg transition-all duration-200 ${
+                  sectionTheme === 'dark' 
+                    ? 'text-gray-300 hover:text-white hover:bg-white/10' 
+                    : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
+                }`}
+                title="Email"
+              >
+                <Mail size={20} />
+              </a>
+            </div>
           </div>
         )}
       </div>

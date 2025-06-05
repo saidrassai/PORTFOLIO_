@@ -36,7 +36,7 @@ function App() {
         <ScrollToTop />
         
         {/* Main Content */}
-        <main className="relative">
+        <main className="relative bg-white">
         {/* Hero Section */}
         <section id="hero">
           <Hero />
@@ -55,6 +55,28 @@ function App() {
         <section id="contact">
           <Contact />
         </section>
+        
+        {/* Footer */}
+        <footer className="bg-neutral-900 text-white py-6">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="flex flex-col md:flex-row items-center justify-center md:justify-between text-sm">
+              <div className="text-gray-300">
+                © 2025 All rights reserved
+              </div>
+              <div className="flex items-center gap-2 mt-2 md:mt-0">
+                <span className="text-gray-300">Made with ❤️ by</span>
+                <a 
+                  href="https://rassaisaid.me" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-white font-semibold hover:text-blue-400 transition-colors duration-300"
+                >
+                  RASS.AI
+                </a>
+              </div>
+            </div>
+          </div>
+        </footer>
       </main>
       </div>
     </>

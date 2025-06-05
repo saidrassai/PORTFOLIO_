@@ -11,6 +11,7 @@ const Hero = () => {
   useEffect(() => {
     const tl = gsap.timeline()
 
+    // Initial entrance animations
     tl.fromTo(titleRef.current,
       { opacity: 0, y: 50 },
       { opacity: 1, y: 0, duration: 1, ease: "power3.out" }
@@ -19,13 +20,14 @@ const Hero = () => {
       { opacity: 0, y: 30 },
       { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
       "-=0.3"
-    )    .fromTo(ctaRef.current,
+    )
+    .fromTo(ctaRef.current,
       { opacity: 0, y: 20 },
       { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
       "-=0.2"
     )
-  }, []);
-  
+  }, [])
+
   return (
     <section id="home" className="min-h-screen relative overflow-hidden" data-theme="dark">
       {/* 3D Scene Background */}
@@ -33,21 +35,19 @@ const Hero = () => {
       
       {/* Content */}      
       <div className="min-h-screen flex items-center justify-center px-6 z-1">
-        <div className="max-w-4xl mx-auto text-center backdrop-blur-sm bg-black/10 p-8 rounded-xl shadow-xl">
-          <h1 
+        <div className="max-w-4xl mx-auto text-center backdrop-blur-sm bg-black/10 p-8 rounded-xl shadow-xl">          <h1 
             ref={titleRef}
-            className="text-4xl md:text-6xl lg:text-7xl font-light leading-tight mb-6 tracking-tight text-white drop-shadow-xl"
-          >
-            Creative{' '}
-            <span className="font-medium text-indigo-400">Developer</span>
+            className="text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-6 tracking-tight text-white drop-shadow-xl"
+          >            <span className=" font-bold"style={{ color: '#EEEEEE' }}>WHERE IDEAS</span>
+            <span className="text-white font-bold mx-2"> </span>
+            <span className="font-bold px-1 rounded" style={{ color: '#333446', backgroundColor: '#FFEB3B', paddingTop: '1px', paddingBottom: '1px' }}>BECOMES REALITY</span>
           </h1>
           
           <p 
             ref={subtitleRef}
             className="text-lg md:text-xl text-gray-200 mb-12 max-w-2xl mx-auto leading-relaxed drop-shadow-lg"
           >
-            Building digital experiences with modern web technologies,
-            clean design, and smooth animations
+            Building solutions for tomorrow through modern technologies, clean design, critical thinking, and a creative spirit.
           </p>
           
           <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 justify-center items-center">

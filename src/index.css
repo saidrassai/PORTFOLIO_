@@ -201,17 +201,15 @@ a, button, input, textarea {
   }
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #fafafa;
-    background-color: #0a0a0a;
-  }
-  
-  body {
-    background-color: #0a0a0a;
-    color: #fafafa;
-  }
+/* Force light mode for portfolio */
+:root {
+  color: #0a0a0a !important;
+  background-color: #ffffff !important;
+}
+
+body {
+  background-color: #ffffff !important;
+  color: #0a0a0a !important;
 }
 
 /* Changelog Timeline Enhancements */
@@ -405,3 +403,5 @@ a:focus-visible {
     animation: none;
   }
 }
+
+/* Removed morphing text CSS - now using GSAP */
