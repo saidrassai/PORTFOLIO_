@@ -54,9 +54,8 @@ const Hero = () => {
               className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-white/90 backdrop-blur-sm text-gray-900 rounded-full hover:bg-white transition-all duration-300 font-medium shadow-lg text-center"
             >
               View Work
-            </a>
-            <a 
-              href="/resume.pdf"
+            </a>            <a
+              href="/Resume.pdf"
               download="RASSAI_SAID_Resume.pdf"
               className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-yellow-400 hover:bg-yellow-300 backdrop-blur-sm text-gray-900 rounded-full transition-all duration-300 font-medium shadow-lg text-center flex items-center justify-center gap-2"
             >
