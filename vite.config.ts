@@ -5,6 +5,9 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   
+  // Base URL for assets
+  base: './',
+  
   // Production optimizations
   build: {
     // Output directory
@@ -12,6 +15,9 @@ export default defineConfig({
     
     // Asset size warnings
     chunkSizeWarningLimit: 1000,
+    
+    // Ensure proper asset handling
+    assetsDir: 'assets',
     
     // Rollup options for optimization
     rollupOptions: {
@@ -21,6 +27,15 @@ export default defineConfig({
           vendor: ['react', 'react-dom'],
           three: ['three', '@react-three/fiber', '@react-three/drei'],
           ui: ['lucide-react', 'gsap'],
+        },
+        // Ensure proper file extensions
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name?.endsWith('.css')) {
+            return 'assets/[name]-[hash].css';
+          }
+          return 'assets/[name]-[hash].[ext]';
         },
       },
     },
@@ -42,11 +57,19 @@ export default defineConfig({
   preview: {
     port: 4173,
     strictPort: true,
+    // Add MIME type headers
+    headers: {
+      'Content-Type': 'application/javascript; charset=utf-8',
+    },
   },
   
   // Development server configuration
   server: {
     port: 5173,
     strictPort: true,
+    // Add MIME type headers for development
+    headers: {
+      'Content-Type': 'application/javascript; charset=utf-8',
+    },
   },
 })
