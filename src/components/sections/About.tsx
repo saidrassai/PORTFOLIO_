@@ -22,6 +22,16 @@ const About = () => {
   const titleRef = useRef<HTMLHeadingElement>(null)
   const timelineRef = useRef<HTMLDivElement>(null)
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({})
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)  }, [])
 
   // Changelog entries data
   const changelogEntries: ChangelogEntry[] = [
@@ -110,16 +120,15 @@ const About = () => {
   }
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Animate title
+    const ctx = gsap.context(() => {      // Animate title
       gsap.fromTo(titleRef.current,
-        { opacity: 0, y: 50, scale: 0.9 },
+        { opacity: 0, y: 30, scale: 0.95 },
         {
           opacity: 1,
           y: 0,
           scale: 1,
-          duration: 1.2,
-          ease: "back.out(1.7)",
+          duration: 0.6,
+          ease: "power3.out",
           scrollTrigger: {
             trigger: titleRef.current,
             start: "top 80%",
@@ -193,46 +202,40 @@ const About = () => {
     }
   }
   return (
-    <section ref={sectionRef} id="about" className="min-h-screen pb-20 px-6 bg-white relative overflow-hidden" data-theme="light">
+    <section ref={sectionRef} id="about" className="pt-12 pb-20 px-6 bg-white relative overflow-hidden" data-theme="light">
       {/* Simplified background */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-blue-50/30" />
       
       <div className="max-w-6xl mx-auto relative z-10">        {/* Section Title */}
-        <div className="text-center mb-12">          <h2 ref={titleRef} className="text-[5.5rem] md:text-[3rem] font-black uppercase tracking-[-0.02em] mb-8 pointer-events-none whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] text-gray-900">            ACADIMIC{' '}            <span className="px-1 rounded" style={{ backgroundColor: '#FFEB3B', color: '#333446', paddingTop: '1px', paddingBottom: '1px' }}>
+        <div className="text-center mb-12">          <h2 ref={titleRef} className="text-[2.5rem] sm:text-[3rem] md:text-[4rem] lg:text-[3.5rem] font-black uppercase tracking-[-0.02em] mb-8 pointer-events-none sm:whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] text-gray-900">
+            <span className="block sm:inline">ACADEMIC</span>{' '}
+            <span className="block sm:inline px-1 rounded" style={{ backgroundColor: '#FFEB3B', color: '#333446', paddingTop: '1px', paddingBottom: '1px' }}>
               JOURNEY
             </span>
-          </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+          </h2><p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto mb-8 leading-relaxed">
             A journey through skills, projects, and milestones that shaped my expertise in critical thinking & problem-solving.
           </p>
-        </div>
-
-        {/* Timeline */}
-        <div ref={timelineRef} className="relative">          {/* Timeline background line */}
+        </div>        {/* Timeline */}
+        <div ref={timelineRef} className="relative">
+          {/* Timeline background line - hidden on mobile */}
           <div 
-            className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-gray-200 timeline-line" 
+            className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-gray-200 timeline-line hidden md:block" 
             style={{ 
               height: `${changelogEntries.length > 0 ? (changelogEntries.length - 1) * 224 + 400 : 100}px` 
             }} 
           />
-          {/* Timeline progress line */}
+          {/* Timeline progress line - hidden on mobile */}
           <div 
-            className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-gradient-to-b from-blue-500 via-purple-500 to-blue-600 timeline-progress origin-top scale-y-0" 
+            className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-gradient-to-b from-blue-500 via-purple-500 to-blue-600 timeline-progress origin-top scale-y-0 hidden md:block" 
             style={{ 
               height: `${changelogEntries.length > 0 ? (changelogEntries.length - 1) * 224 + 400 : 100}px` 
             }} 
-          />
-
-          {/* Changelog entries */}          <div 
-            className="relative" 
-            style={{ 
-              height: `${changelogEntries.length > 0 ? (changelogEntries.length - 1) * 224 + 360 : 0}px` 
-            }}
-          >
-            {changelogEntries.map((entry, index) => {
+          />          {/* Changelog entries */}
+          <div className="relative md:block md:min-h-0" style={{ minHeight: isMobile ? 'auto' : `${changelogEntries.length > 0 ? (changelogEntries.length - 1) * 224 + 360 : 0}px` }}>            {changelogEntries.map((entry, index) => {
               const IconComponent = entry.icon;
-              // Place odd id (1,3,5...) on left, even id (2,4,6...) on right
-              const isLeft = parseInt(entry.id) % 2 === 1;              // Calculate staggered positioning - each card starts at more spacing to prevent overlap
+              // Place odd id (1,3,5...) on left, even id (2,4,6...) on right - desktop only
+              const isLeft = parseInt(entry.id) % 2 === 1;
+              // Calculate staggered positioning - each card starts at more spacing to prevent overlap
               const cardHeight = 320; // Increased card height including spacing
               const staggerOffset = cardHeight * 0.7; // Increased spacing between cards
               const topPosition = index * staggerOffset;
@@ -240,18 +243,27 @@ const About = () => {
               return (
                 <div 
                   key={entry.id} 
-                  className="absolute flex items-start w-full"
-                  style={{ top: `${topPosition}px` }}
-                >                  {/* Centered icon on timeline - animated when in view */}
-                  <div className="timeline-icon absolute left-1/2 top-8 -translate-x-1/2 w-12 h-12 bg-white rounded-full border-4 border-blue-200 flex items-center justify-center shadow-lg z-30 opacity-0 scale-0 transition-all duration-500">
+                  className="md:absolute md:flex md:items-start md:w-full mb-8 md:mb-0"
+                  style={{ top: !isMobile ? `${topPosition}px` : 'auto' }}
+                >
+                  {/* Centered icon on timeline - desktop only, top of card on mobile */}
+                  <div className="timeline-icon md:absolute md:left-1/2 md:top-8 md:-translate-x-1/2 w-12 h-12 bg-white rounded-full border-4 border-blue-200 flex items-center justify-center shadow-lg md:z-30 opacity-0 scale-0 transition-all duration-500 mb-4 md:mb-0 mx-auto md:mx-0">
                     <IconComponent size={20} className="text-blue-600" />
                   </div>
-                    {/* Entry card, positioned left or right */}
-                  <div className={`w-5/12 ${isLeft ? 'mr-auto pr-16 text-right' : 'ml-auto pl-16 text-left'}`}>
-                    <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 w-full relative z-10">
+
+                  {/* Entry card, positioned left or right on desktop, full width on mobile */}
+                  <div className={`w-full md:w-5/12 ${isLeft ? 'md:mr-auto md:pr-16 md:text-right' : 'md:ml-auto md:pl-16 md:text-left'}`}>                    <div 
+                      className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 w-full relative z-10 md:cursor-default cursor-pointer"
+                      onClick={(e) => {
+                        // Only toggle on mobile and if not clicking on a button
+                        if (isMobile && !(e.target as HTMLElement).closest('button')) {
+                          toggleCardExpansion(entry.id)
+                        }
+                      }}
+                    >
                       {/* Header */}
-                      <div className={`flex items-center gap-3 mb-4 ${isLeft ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`flex items-center gap-2 ${isLeft ? 'flex-row-reverse' : 'flex-row'}`}>
+                      <div className={`flex items-center gap-3 mb-4 justify-start ${isLeft ? 'md:justify-end' : 'md:justify-start'}`}>
+                        <div className={`flex items-center gap-2 ${isLeft ? 'md:flex-row-reverse' : 'md:flex-row'}`}>
                           <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getTypeColor(entry.type)}`}>
                             {entry.type}
                           </span>
@@ -261,56 +273,67 @@ const About = () => {
 
                       {/* Title */}
                       <h3 className="text-xl font-bold text-gray-900 mb-2">{entry.title}</h3>
-                      
-                      {/* Description with see more functionality */}
+                        {/* Description with responsive see more functionality */}
                       <div className="text-gray-600 mb-4 leading-relaxed">
+                        {/* Show description based on expansion state */}
                         {expandedCards[entry.id] 
                           ? entry.description 
-                          : entry.description.length > 120 
-                            ? entry.description.substring(0, 120) + '...'
-                            : entry.description
-                        }                        {entry.description.length > 120 && (
+                          : isMobile 
+                            ? '' // On mobile, hide description when collapsed
+                            : entry.description.length > 120 
+                              ? entry.description.substring(0, 120) + '...'
+                              : entry.description
+                        }
+                        
+                        {/* See more/less button - works on both mobile and desktop */}
+                        {((isMobile && !expandedCards[entry.id]) || (!isMobile && entry.description.length > 120)) && (
                           <button
-                            onClick={() => toggleCardExpansion(entry.id)}
-                            className="ml-2 text-blue-600 hover:text-blue-700 text-sm font-medium underline relative z-20 cursor-pointer transition-colors duration-200 hover:bg-blue-50 px-1 py-0.5 rounded"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              toggleCardExpansion(entry.id)
+                            }}
+                            className="text-blue-600 hover:text-blue-700 text-sm font-medium underline relative z-20 cursor-pointer transition-colors duration-200 hover:bg-blue-50 px-1 py-0.5 rounded"
                           >
-                            {expandedCards[entry.id] ? 'Show less' : 'See more'}
+                            {expandedCards[entry.id] ? 'Show less' : isMobile ? 'Tap to read more...' : 'See more'}
                           </button>
                         )}
                       </div>
                       
-                      {/* Tags */}
-                      <div className={`flex flex-wrap gap-2 mb-3 ${isLeft ? 'justify-end' : 'justify-start'}`}>
-                        {entry.tags.map((tag, tagIndex) => (
-                          <span key={tagIndex} className="px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs font-medium">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-
-                      {/* Date and location */}
-                      <div className={`flex items-center gap-4 text-sm text-gray-500 ${isLeft ? 'justify-end' : 'justify-start'}`}>
-                        <div className="flex items-center gap-1">
-                          <Calendar size={14} />
-                          <span>{entry.date}</span>
+                      {/* Tags - show only when expanded on mobile or always on desktop */}
+                      {(!isMobile || expandedCards[entry.id]) && (
+                        <div className={`flex flex-wrap gap-2 mb-3 justify-start ${isLeft ? 'md:justify-end' : 'md:justify-start'}`}>
+                          {entry.tags.map((tag, tagIndex) => (
+                            <span key={tagIndex} className="px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs font-medium">
+                              {tag}
+                            </span>
+                          ))}
                         </div>
-                        {entry.location && (
+                      )}
+
+                      {/* Date and location - show only when expanded on mobile or always on desktop */}
+                      {(!isMobile || expandedCards[entry.id]) && (
+                        <div className={`flex items-center gap-4 text-sm text-gray-500 justify-start ${isLeft ? 'md:justify-end' : 'md:justify-start'}`}>
                           <div className="flex items-center gap-1">
-                            <MapPin size={14} />
-                            <span>{entry.location}</span>
+                            <Calendar size={14} />
+                            <span>{entry.date}</span>
                           </div>
-                        )}
-                      </div>
+                          {entry.location && (
+                            <div className="flex items-center gap-1">
+                              <MapPin size={14} />
+                              <span>{entry.location}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                     
-                  {/* Connector line - animated */}
-                  <div className={`timeline-connector absolute top-8 w-12 h-0.5 bg-gray-200 opacity-0 ${isLeft ? 'right-1/2 mr-6' : 'left-1/2 ml-6'}`} />
+                  {/* Connector line - desktop only */}
+                  <div className={`timeline-connector absolute top-8 w-12 h-0.5 bg-gray-200 opacity-0 hidden md:block ${isLeft ? 'right-1/2 mr-6' : 'left-1/2 ml-6'}`} />
                 </div>
               )
             })}
-          </div>
-        </div>
+          </div>        </div>
 
         {/* Call to action */}
         <div className="text-center mt-20">

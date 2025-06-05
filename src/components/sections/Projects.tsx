@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import { ExternalLink, Github, Code, Globe, Smartphone, Database, Palette, Activity } from 'lucide-react'
+import { ExternalLink, Github, Code, Globe, Smartphone, Database, Palette, Activity, X } from 'lucide-react'
 import ParallaxBackground from '../ui/ParallaxBackground'
 import ParallaxContent from '../ui/ParallaxContent'
 import ParallaxFloatingElements from '../ui/ParallaxFloatingElements'
-import Portfolio_Image from '../../../public/Project_Photos/portolio.png'
+// Portfolio image will be referenced as /Project_Photos/portolio.png
 
 interface Project {
   id: string
@@ -30,7 +30,7 @@ const Projects = () => {
       status: 'live',
       version: 'v3.2.0',
       category: 'web',
-      image: Portfolio_Image
+      image: '/Project_Photos/portolio.png'
     },
     {
       id: 'proj_002',
@@ -42,7 +42,7 @@ const Projects = () => {
       status: 'completed',
       version: 'v2.1.5',
       category: 'fullstack',
-      image: Portfolio_Image
+      image: '/Project_Photos/portolio.png'
     },
     {
       id: 'proj_003',
@@ -54,7 +54,7 @@ const Projects = () => {
       status: 'development',
       version: 'v1.8.3',
       category: 'mobile',
-      image: Portfolio_Image
+      image: '/Project_Photos/portolio.png'
     },
     {
       id: 'proj_004',
@@ -66,7 +66,7 @@ const Projects = () => {
       status: 'live',
       version: 'v4.0.1',
       category: 'design',
-      image: Portfolio_Image
+      image: '/Project_Photos/portolio.png'
     },
     {
       id: 'proj_005',
@@ -78,7 +78,7 @@ const Projects = () => {
       status: 'live',
       version: 'v3.5.2',
       category: 'ai',
-      image: Portfolio_Image
+      image: '/Project_Photos/portolio.png'
     },
     {
       id: 'proj_006',
@@ -90,14 +90,15 @@ const Projects = () => {
       status: 'development',
       version: 'v0.9.1',
       category: 'web',
-      image: Portfolio_Image
+      image: '/Project_Photos/portolio.png'
     }
   ]
-  const [currentIndex, setCurrentIndex] = useState(0)
+    const [currentIndex, setCurrentIndex] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
   const [projectInfo, setProjectInfo] = useState({ title: projects[0].title, id: projects[0].id })
   const [infoOpacity, setInfoOpacity] = useState(1)
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null)
+  const [showDescription, setShowDescription] = useState(false)
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   
   const updateCarousel = (newIndex: number) => {
     if (isAnimating) return
@@ -120,38 +121,69 @@ const Projects = () => {
 
     // Reset animation lock
     setTimeout(() => {
-      setIsAnimating(false)
-    }, 800)
+      setIsAnimating(false)    }, 800)
   }
 
+  const handleImageClick = (project: Project, e: React.MouseEvent, position: string, index: number) => {
+    e.stopPropagation()
+    
+    // Only show modal if card is in center position
+    if (position === 'center') {
+      setSelectedProject(project)
+      setShowDescription(true)
+      // Block page scroll when modal opens
+      document.body.style.overflow = 'hidden'
+    } else {
+      // If not center, move card to center instead
+      updateCarousel(index)
+    }
+  }
+    const closeDescription = () => {
+    setShowDescription(false)
+    setSelectedProject(null)
+    // Restore page scroll when modal closes
+    document.body.style.overflow = 'unset'
+  }
+  
   const getCardPosition = (index: number): string => {
     const offset = (index - currentIndex + projects.length) % projects.length
 
-    if (offset === 0) return 'center'
-    if (offset === 1) return 'right-1'
-    if (offset === 2) return 'right-2'
-    if (offset === projects.length - 1) return 'left-1'
-    if (offset === projects.length - 2) return 'left-2'
-    return 'hidden'
+    // Show only 5 cards in symmetric layout: center + 2 on each side
+    switch (offset) {
+      case 0: return 'center'          // Current card in center
+      case 1: return 'right-1'         // First card to the right
+      case 2: return 'right-2'         // Second card to the right  
+      case 3: return 'hidden'          // Hidden behind center card
+      case 4: return 'left-2'          // Second card to the left
+      case 5: return 'left-1'          // First card to the left
+      default: return 'center'
+    }
   }
-  
-  const getCardStyles = (position: string): string => {
+    const getCardStyles = (position: string): string => {
     const baseStyles = "absolute bg-white rounded-[20px] overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.15)] transition-all duration-[800ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] cursor-pointer"
-      switch (position) {
+      
+    switch (position) {
       case 'center':
-        return `${baseStyles} w-[320px] h-[420px] z-10 scale-110 translate-z-0`
-      case 'left-1':
-        return `${baseStyles} w-[288px] h-[378px] z-[5] -translate-x-[200px] scale-100 translate-z-[-100px] opacity-90`
-      case 'left-2':
-        return `${baseStyles} w-[256px] h-[336px] z-[1] -translate-x-[400px] scale-80 translate-z-[-300px] opacity-70`
+        return `${baseStyles} w-[250px] sm:w-[280px] md:w-[320px] h-[320px] sm:h-[370px] md:h-[420px] z-10 scale-110 left-1/2 -translate-x-1/2`
+      
+      // Right side cards (positive translations)
       case 'right-1':
-        return `${baseStyles} w-[288px] h-[378px] z-[5] translate-x-[200px] scale-100 translate-z-[-100px] opacity-90`
+        return `${baseStyles} w-[200px] sm:w-[230px] md:w-[280px] h-[270px] sm:h-[320px] md:h-[370px] z-[5] scale-95 opacity-90 left-1/2 -translate-x-1/2 translate-x-[30px] sm:translate-x-[170px] md:translate-x-[150px]`
       case 'right-2':
-        return `${baseStyles} w-[256px] h-[336px] z-[1] translate-x-[400px] scale-80 translate-z-[-300px] opacity-70`
+        return `${baseStyles} w-[160px] sm:w-[200px] md:w-[240px] h-[220px] sm:h-[270px] md:h-[320px] z-[3] scale-80 opacity-70 left-1/2 -translate-x-1/2 translate-x-[280px] sm:translate-x-[340px] md:translate-x-[300px]`
+      
+      // Left side cards (negative translations - perfect mirror)
+      case 'left-1':
+        return `${baseStyles} w-[200px] sm:w-[230px] md:w-[280px] h-[270px] sm:h-[320px] md:h-[370px] z-[5] scale-95 opacity-90 left-1/2 -translate-x-1/2 -translate-x-[140px] sm:-translate-x-[170px] md:-translate-x-[440px]`
+      case 'left-2':
+        return `${baseStyles} w-[160px] sm:w-[200px] md:w-[240px] h-[220px] sm:h-[270px] md:h-[320px] z-[3] scale-80 opacity-70 left-1/2 -translate-x-1/2 -translate-x-[280px] sm:-translate-x-[340px] md:-translate-x-[600px]`
+      
+      // Hidden card (behind center)
       case 'hidden':
-        return `${baseStyles} w-[280px] h-[380px] opacity-0 pointer-events-none`
+        return `${baseStyles} w-[250px] sm:w-[280px] md:w-[320px] h-[320px] sm:h-[370px] md:h-[420px] z-0 scale-100 opacity-0 left-1/2 -translate-x-1/2 pointer-events-none`
+      
       default:
-        return `${baseStyles} w-[280px] h-[380px]`
+        return `${baseStyles} w-[280px] h-[380px] left-1/2 -translate-x-1/2`
     }
   }
 
@@ -186,19 +218,27 @@ const Projects = () => {
       default: return 'bg-gray-500/90 text-white'
     }
   }
-
   const getImageStyles = (position: string): string => {
     const baseStyles = "w-full h-full object-cover transition-all duration-[800ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
     
     if (position === 'center') {
       return `${baseStyles} filter-none`
     }
+    if (position === 'hidden') {
+      return `${baseStyles} grayscale opacity-0`
+    }
     return `${baseStyles} grayscale`
   }
-
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (showDescription) {
+        if (e.key === 'Escape') {
+          closeDescription()
+        }
+        return
+      }
+      
       if (e.key === 'ArrowLeft') {
         updateCarousel(currentIndex - 1)
       } else if (e.key === 'ArrowRight') {
@@ -208,7 +248,7 @@ const Projects = () => {
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [currentIndex])
+  }, [currentIndex, showDescription])
 
   // Touch/swipe navigation
   useEffect(() => {
@@ -242,11 +282,17 @@ const Projects = () => {
     return () => {
       document.removeEventListener('touchstart', handleTouchStart)
       document.removeEventListener('touchend', handleTouchEnd)
+    }  }, [currentIndex])
+
+  // Cleanup scroll lock on component unmount
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = 'unset'
     }
-  }, [currentIndex])
-  
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center overflow-hidden pb-20 relative bg-white">
+  }, [])
+
+    return (
+    <div className="pt-12 pb-20 px-6 bg-white relative overflow-hidden">
       {/* Parallax Background Patterns */}
       <ParallaxBackground pattern="dots" speed={0.2} opacity={0.03} color="rgba(59,130,246,0.4)" />
       <ParallaxBackground pattern="lines" speed={-0.3} opacity={0.02} color="rgba(139,92,246,0.3)" />
@@ -254,42 +300,62 @@ const Projects = () => {
       {/* Floating Elements */}
       <ParallaxFloatingElements />
       
-      <div className="relative z-10 w-full flex flex-col items-center">
+      <div className="max-w-6xl mx-auto relative z-10">
+        <div className="relative z-10 w-full flex flex-col items-center px-4 sm:px-0">
         {/* Title */}        <ParallaxContent speed={0.8} scale={true}>
-          <h1 className="text-[7.5rem] font-black uppercase tracking-[-0.02em] mb-8 pointer-events-none whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] text-gray-900 md:text-[4.5rem]">
-            <span className="px-1 rounded" style={{ backgroundColor: '#FFEB3B', color: '#333446', paddingTop: '1px', paddingBottom: '1px' }}>PROJECTS</span>
+          <h1 className="text-[3rem] sm:text-[4rem] md:text-[5rem] lg:text-[3.5rem] font-black uppercase tracking-[-0.02em] mb-6 sm:mb-8 pointer-events-none whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] text-gray-900">
+            <span className="px-1 rounded" style={{ backgroundColor: '#FFEB3B', color: '#333446', paddingBottom: '1px' }}>PROJECTS</span>
           </h1>
-        </ParallaxContent>
-
-        {/* Carousel Container */}
+        </ParallaxContent>        {/* Carousel Container */}
         <ParallaxContent speed={0.95} direction="up">
-      <div className="w-full max-w-[1200px] h-[450px] relative perspective-[1000px]">
-        {/* Carousel Track */}
-        <div 
-          className="w-full h-full flex justify-center items-center relative preserve-3d transition-transform duration-[800ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
-          style={{ transformStyle: 'preserve-3d' }}
-        >
+          <div className="w-full max-w-[350px] sm:max-w-[450px] md:max-w-[1200px] h-[350px] sm:h-[400px] md:h-[450px] relative mx-auto flex items-center justify-center overflow-visible">
+            {/* Carousel Track */}
+            <div 
+              className="w-full h-full flex justify-center items-center relative"
+              style={{ 
+                transformStyle: 'preserve-3d',
+                perspective: '1000px'
+              }}
+            >
           {/* Project Cards */}
           {projects.map((project, index) => {
             const position = getCardPosition(index)
             const isCenter = position === 'center'
             const CategoryIcon = getCategoryIcon(project.category)
             
-            return (
-              <div
+            return (              <div
                 key={project.id}
                 className={getCardStyles(position)}
                 onClick={() => updateCarousel(index)}
-                onMouseEnter={() => setHoveredCard(project.id)}
-                onMouseLeave={() => setHoveredCard(null)}
-              >                {/* Card Background Image */}
-                <div className="absolute inset-0">
+              >{/* Card Background Image */}                <div 
+                  className="absolute inset-0 cursor-pointer" 
+                  onClick={(e) => handleImageClick(project, e, position, index)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      handleImageClick(project, e as any, position, index)
+                    }
+                  }}
+                  aria-label={`View details for ${project.title}`}
+                >
                   <img
                     src={project.image}
                     alt={project.title}
                     className={getImageStyles(position)}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-gray-800/20 to-transparent" />
+                  
+                  {/* Click indicator for center card */}
+                  {isCenter && (
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300 bg-black/20">
+                      <div className="bg-white/90 rounded-full p-3 backdrop-blur-sm border border-white/30">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-gray-700">
+                          <path d="M12 9v6m3-3H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Category Badge */}
@@ -346,44 +412,34 @@ const Projects = () => {
                   {/* Project Title */}
                   <h3 className="text-lg font-bold mb-2 leading-tight">
                     {project.title}
-                  </h3>
-
-                  {/* Tech Stack */}
+                  </h3>                  {/* Tech Stack */}
                   <p className="text-sm text-white/80 mb-3 leading-relaxed">
                     {project.tech.slice(0, 3).join(' • ')}
                     {project.tech.length > 3 && ' • ...'}
-                  </p>                  {/* Description (on hover for center card) */}
-                  {isCenter && hoveredCard === project.id && (
-                    <div className="absolute inset-x-4 bottom-4 p-3 bg-white/95 backdrop-blur-sm rounded-lg border border-gray-200/50 shadow-lg transform transition-all duration-300 ease-out animate-in slide-in-from-bottom-2">
-                      <p className="text-sm text-gray-800 leading-relaxed">
-                        {project.description}
-                      </p>
-                    </div>
-                  )}
+                  </p>
                 </div>
               </div>
             )
-          })}
-        </div>        {/* Navigation Arrows */}
-        <button
-          className="absolute top-1/2 left-5 transform -translate-y-1/2 bg-white/90 text-gray-800 w-12 h-12 rounded-full flex items-center justify-center cursor-pointer z-20 transition-all duration-300 text-2xl border-none outline-none hover:bg-white hover:scale-110 backdrop-blur-sm shadow-lg border border-gray-200/50"
-          onClick={() => updateCarousel(currentIndex - 1)}
-          aria-label="Previous project"
-        >
-          ‹
-        </button>
-        <button
-          className="absolute top-1/2 right-5 transform -translate-y-1/2 bg-white/90 text-gray-800 w-12 h-12 rounded-full flex items-center justify-center cursor-pointer z-20 transition-all duration-300 text-2xl border-none outline-none hover:bg-white hover:scale-110 backdrop-blur-sm shadow-lg border border-gray-200/50"
-          onClick={() => updateCarousel(currentIndex + 1)}
-          aria-label="Next project"
-        >
-          ›
-        </button>
-      </div>
+          })}            </div>
 
-      {/* Project Info Display */}
+            {/* Navigation Arrows */}
+            <button
+              className="absolute top-1/2 left-5 transform -translate-y-1/2 bg-white/90 text-gray-800 w-12 h-12 rounded-full flex items-center justify-center cursor-pointer z-20 transition-all duration-300 text-2xl border-none outline-none hover:bg-white hover:scale-110 backdrop-blur-sm shadow-lg border border-gray-200/50"
+              onClick={() => updateCarousel(currentIndex - 1)}
+              aria-label="Previous project"
+            >
+              ‹
+            </button>
+            <button
+              className="absolute top-1/2 right-5 transform -translate-y-1/2 bg-white/90 text-gray-800 w-12 h-12 rounded-full flex items-center justify-center cursor-pointer z-20 transition-all duration-300 text-2xl border-none outline-none hover:bg-white hover:scale-110 backdrop-blur-sm shadow-lg border border-gray-200/50"
+              onClick={() => updateCarousel(currentIndex + 1)}
+              aria-label="Next project"
+            >
+              ›
+            </button>
+          </div>      {/* Project Info Display */}
       <div 
-        className="text-center mt-12 transition-all duration-500 ease-out"
+        className="text-center mt-6 transition-all duration-500 ease-out"
         style={{ opacity: infoOpacity }}
       >
         <div className="flex items-center justify-center gap-3 mb-2">
@@ -393,9 +449,8 @@ const Projects = () => {
         </div>
         <h2 className="text-[rgb(8,42,123)] text-4xl font-bold mb-4 relative inline-block before:content-[''] before:absolute before:top-full before:left-[-120px] before:w-[100px] before:h-0.5 before:bg-[rgb(8,42,123)] after:content-[''] after:absolute after:top-full after:right-[-120px] after:w-[100px] after:h-0.5 after:bg-[rgb(8,42,123)] md:text-[2rem] md:before:w-[50px] md:before:left-[-70px] md:after:w-[50px] md:after:right-[-70px]">
           {projectInfo.title}
-        </h2>
-        <p className="text-[#848696] text-lg font-medium opacity-80 max-w-2xl mx-auto leading-relaxed">
-          Hover over the center card to see project details and access links
+        </h2>        <p className="text-[#848696] text-lg font-medium opacity-80 max-w-2xl mx-auto leading-relaxed">
+          Click on the center card to see detailed project information, or click other cards to bring them to center
         </p>
       </div>
 
@@ -411,10 +466,94 @@ const Projects = () => {
             }`}
             onClick={() => updateCarousel(index)}
             aria-label={`Go to project ${index + 1}`}        
-             />        ))}
+             />        ))}      </div>        </ParallaxContent>
+        </div>
       </div>
-        </ParallaxContent>
-      </div>
+
+      {/* Description Modal */}
+      {showDescription && selectedProject && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={closeDescription}>
+          <div 
+            className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200/50"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+              <h3 className="text-xl font-bold text-gray-900 pr-4">{selectedProject.title}</h3>              <button
+                onClick={closeDescription}
+                className="p-2 hover:bg-yellow-100 rounded-full transition-colors duration-200 flex-shrink-0"
+                aria-label="Close modal"
+              >
+                <X size={20} className="text-yellow-600 hover:text-yellow-700" />
+              </button>
+            </div>
+            
+            {/* Modal Content */}
+            <div className="p-6">
+              <img
+                src={selectedProject.image}
+                alt={selectedProject.title}
+                className="w-full h-48 sm:h-56 object-cover rounded-xl mb-6 shadow-lg"
+              />
+              
+              {/* Status and Category Badges */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                <span className={`px-3 py-1.5 rounded-full text-xs font-semibold ${getStatusColor(selectedProject.status)}`}>
+                  {selectedProject.status.charAt(0).toUpperCase() + selectedProject.status.slice(1)}
+                </span>
+                <span className={`px-3 py-1.5 rounded-full text-xs font-semibold ${getCategoryColor(selectedProject.category)}`}>
+                  {selectedProject.category.charAt(0).toUpperCase() + selectedProject.category.slice(1)}
+                </span>
+                <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                  {selectedProject.version}
+                </span>
+              </div>
+              
+              <p className="text-gray-600 mb-6 leading-relaxed text-sm sm:text-base">
+                {selectedProject.description}
+              </p>
+              
+              {/* Tech Stack */}
+              <div className="mb-6">
+                <h4 className="font-semibold text-gray-900 mb-3 text-sm">Tech Stack:</h4>
+                <div className="flex flex-wrap gap-2">
+                  {selectedProject.tech.map((tech, index) => (
+                    <span key={index} className="px-3 py-1.5 bg-gray-50 text-gray-700 rounded-lg text-xs font-medium border border-gray-200">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Project Links */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                {selectedProject.github && (
+                  <a
+                    href={selectedProject.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors text-sm font-medium"
+                  >
+                    <Github size={16} />
+                    View Code
+                  </a>
+                )}
+                {selectedProject.visit && (
+                  <a
+                    href={selectedProject.visit}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-sm font-medium"
+                  >
+                    <ExternalLink size={16} />
+                    Live Demo
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

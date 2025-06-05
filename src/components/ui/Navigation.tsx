@@ -81,15 +81,15 @@ const Navigation = () => {
               ? `rgba(17,17,17,${opacity})` // Tailwind's neutral-900
               : `rgba(255,255,255,${opacity})`,
       }}
-    >
-      <div className="max-w-6xl mx-auto px-6 py-2">
+    >      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-2">
         <div className="flex items-center justify-between">            {/* Logo */}          <div
             ref={logoRef}
-            className={`text-lg font-light tracking-wide cursor-pointer hover:scale-105 transition-all duration-300 ${
+            className={`text-sm sm:text-lg font-light tracking-wide cursor-pointer hover:scale-105 transition-all duration-300 ${
               sectionTheme === 'dark' ? 'text-white hover:text-gray-100' : 'text-neutral-900 hover:text-neutral-800'
             }`}
           >
-            WELCOME TO RASSAISAID.ME
+            <span className="hidden sm:inline">WELCOME TO RASSAISAID.ME</span>
+            <span className="sm:hidden">RASSAISAID.ME</span>
           </div>
 
           {/* Desktop Navigation */}
@@ -103,11 +103,8 @@ const Navigation = () => {
                     ? sectionTheme === 'dark' ? 'text-white' : 'text-neutral-900'
                     : sectionTheme === 'dark' ? 'text-gray-300 hover:text-white' : 'text-neutral-600 hover:text-neutral-900'
                 }`}
-              >
-                {item.label}
-                <span className={`absolute -bottom-1 left-0 h-0.5 ${
-                  sectionTheme === 'dark' ? 'bg-white' : 'bg-neutral-900'
-                } transition-all duration-200 ${
+              >                {item.label}
+                <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-yellow-600 via-yellow-500 to-amber-600 transition-all duration-200 ${
                   activeSection === item.href.slice(1) ? 'w-full' : 'w-0 group-hover:w-full'
                 }`} />
               </a>
@@ -152,70 +149,82 @@ const Navigation = () => {
             >
               <Mail size={18} />
             </a>
-          </div>
-
-          {/* Mobile Menu Button */}
+          </div>          {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`md:hidden p-2 ${sectionTheme === 'dark' ? 'text-gray-200 hover:text-white' : 'text-neutral-600 hover:text-neutral-900'} transition-colors`}
+            className={`md:hidden p-3 rounded-lg transition-all duration-200 ${
+              sectionTheme === 'dark' 
+                ? 'text-gray-200 hover:text-white hover:bg-white/10' 
+                : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
+            }`}
+            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
           >
-            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
-        </div>
-
-        {/* Mobile Navigation */}
+        </div>        {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 py-4 border-t border-neutral-200">            {navItems.map((item) => (
+          <div className={`md:hidden mt-4 py-4 border-t transition-all duration-200 ${
+            sectionTheme === 'dark' ? 'border-neutral-700' : 'border-neutral-200'
+          }`}>            {navItems.map((item, index) => (
               <a
                 key={item.label}
                 href={item.href}
-                className={`block py-2 text-sm font-medium transition-colors duration-200 ${
-                  sectionTheme === 'dark' ? 'text-gray-200 hover:text-white' : 'text-neutral-600 hover:text-neutral-900'
+                className={`block py-3 px-2 text-base font-medium transition-all duration-200 rounded-lg ${
+                  activeSection === item.href.slice(1)
+                    ? sectionTheme === 'dark' 
+                      ? 'text-white bg-white/10' 
+                      : 'text-neutral-900 bg-neutral-100'
+                    : sectionTheme === 'dark' 
+                      ? 'text-gray-200 hover:text-white hover:bg-white/5' 
+                      : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
+                style={{ animationDelay: `${index * 0.1}s` }}
               >
                 {item.label}
               </a>
             ))}
             
             {/* Mobile Social Media Icons */}
-            <div className="flex items-center space-x-4 mt-4 pt-4 border-t border-neutral-200">
+            <div className={`flex items-center justify-center space-x-2 mt-6 pt-4 border-t ${
+              sectionTheme === 'dark' ? 'border-neutral-700' : 'border-neutral-200'
+            }`}>
               <a
                 href="https://github.com/saidrassai"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`p-2 rounded-lg transition-all duration-200 ${
+                className={`p-3 rounded-lg transition-all duration-200 ${
                   sectionTheme === 'dark' 
                     ? 'text-gray-300 hover:text-white hover:bg-white/10' 
                     : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
                 }`}
                 title="GitHub"
               >
-                <Github size={20} />
+                <Github size={22} />
               </a>
               <a
                 href="https://www.linkedin.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`p-2 rounded-lg transition-all duration-200 ${
+                className={`p-3 rounded-lg transition-all duration-200 ${
                   sectionTheme === 'dark' 
                     ? 'text-gray-300 hover:text-white hover:bg-white/10' 
                     : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
                 }`}
                 title="LinkedIn"
               >
-                <Linkedin size={20} />
+                <Linkedin size={22} />
               </a>
               <a
                 href="mailto:rassai.said@ensi.ma"
-                className={`p-2 rounded-lg transition-all duration-200 ${
+                className={`p-3 rounded-lg transition-all duration-200 ${
                   sectionTheme === 'dark' 
                     ? 'text-gray-300 hover:text-white hover:bg-white/10' 
                     : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
                 }`}
                 title="Email"
               >
-                <Mail size={20} />
+                <Mail size={22} />
               </a>
             </div>
           </div>

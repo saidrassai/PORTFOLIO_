@@ -80,7 +80,7 @@ const TechStack = () => {
         {
           opacity: 1,
           y: 0,
-          duration: 1,
+          duration: 0.6,
           ease: "power3.out",
           scrollTrigger: {
             trigger: titleRef.current,
@@ -135,12 +135,12 @@ const TechStack = () => {
   const renderTechIcon = (tech: Technology, index: number) => (
     <div
       key={`${tech.name}-${index}`}
-      className="flex-shrink-0 mx-6"
+      className="flex-shrink-0 mx-3 sm:mx-4 md:mx-6"
       title={tech.name}
       onMouseEnter={() => handleIconHover(true)}
       onMouseLeave={() => handleIconHover(false)}
     >
-      <div className="w-16 h-16 bg-white rounded-2xl shadow-md border border-gray-200 flex items-center justify-center p-3">
+      <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-white rounded-xl sm:rounded-2xl shadow-md border border-gray-200 flex items-center justify-center p-2 sm:p-3">
         <OptimizedImage 
           src={tech.iconUrl} 
           alt={tech.name} 
@@ -153,7 +153,7 @@ const TechStack = () => {
   return (
     <div 
       ref={sectionRef} 
-      className="pb-20 overflow-hidden relative bg-white" 
+      className="pt-12 pb-20 overflow-hidden relative bg-white" 
       data-theme="light"
     >
       {/* Parallax Background Patterns */}
@@ -163,17 +163,17 @@ const TechStack = () => {
       <div className="container mx-auto px-6 relative z-10">
         {/* Section Title */}
         <ParallaxContent speed={0.8} scale={true}>
-          <div className="text-center mb-16">
+          <div className="text-center mb-12 sm:mb-16">
             <h2 
               ref={titleRef}
-              className="text-[5.5rem] md:text-[3rem] font-black uppercase tracking-[-0.02em] mb-8 pointer-events-none whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] text-gray-900"
+              className="text-[3rem] sm:text-[4rem] md:text-[5rem] lg:text-[3.5rem] font-black uppercase tracking-[-0.02em] mb-6 sm:mb-8 pointer-events-none whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] text-gray-900"
             >
               TECH{' '}
               <span className="px-1 rounded" style={{ backgroundColor: '#FFEB3B', color: '#333446', paddingTop: '1px', paddingBottom: '1px' }}>
                 STACK
               </span>
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
               Technologies and tools I work with to bring ideas to life
             </p>
           </div>
@@ -181,9 +181,9 @@ const TechStack = () => {
 
         {/* Carousel Container */}
         <ParallaxContent speed={0.95} direction="left">
-          <div className="relative max-w-none mx-auto overflow-hidden rounded-2xl bg-white border border-gray-200 py-8">
+          <div className="relative max-w-none mx-auto overflow-hidden rounded-xl sm:rounded-2xl bg-white border border-gray-200 py-6 sm:py-8">
             {/* Top Row - Simple infinite scroll (left to right) */}
-            <div className="mb-8 relative overflow-hidden">
+            <div className="mb-6 sm:mb-8 relative overflow-hidden">
               <div className="flex items-center">
                 <div 
                   ref={topRowRef}

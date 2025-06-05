@@ -7,6 +7,7 @@ import Contact from './components/sections/Contact'
 import Navigation from './components/ui/Navigation'
 import PageLoader from './components/ui/PageLoader'
 import ScrollToTop from './components/ui/ScrollToTop'
+import ScrollProgress from './components/ui/ScrollProgress'
 import { initSmoothScrolling } from './utils/smoothScroll'
 
 
@@ -29,6 +30,9 @@ function App() {
       {isLoading && <PageLoader onLoadComplete={handleLoadComplete} />}
       
       <div className={`relative transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
+        {/* Global Scroll Progress Bar */}
+        <ScrollProgress />
+        
         {/* Fixed Navigation */}
         <Navigation />
         

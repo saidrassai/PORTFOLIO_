@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://rassaisaid.me/sitemap.xml
+
+# Specific instructions for search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Block access to source maps in production
+Disallow: /*.map$

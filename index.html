@@ -4,10 +4,80 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- SEO Meta Tags -->
+    <title>Interactive 3D Portfolio | RASSAI SAID</title>
+    <meta name="description" content="Explore an interactive 3D portfolio showcasing modern web development projects with React Three Fiber, GSAP animations, and cutting-edge technologies." />
+    <meta name="keywords" content="3D portfolio, React Three Fiber, web developer, interactive design, GSAP, TypeScript, modern web development" />
+    <meta name="author" content="RASSAI SAID" />
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Interactive 3D Portfolio | RASSAI SAID" />
+    <meta property="og:description" content="Explore an interactive 3D portfolio showcasing modern web development projects with React Three Fiber, GSAP animations, and cutting-edge technologies." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://rassaisaid.me/" />
+    <meta property="og:image" content="https://rassaisaid.me/portfolio.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="RASSAI SAID - Interactive 3D Portfolio Preview" />
+    <meta property="og:site_name" content="RASSAI SAID Portfolio" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Interactive 3D Portfolio | RASSAI SAID" />
+    <meta name="twitter:description" content="Explore an interactive 3D portfolio showcasing modern web development projects with React Three Fiber, GSAP animations, and cutting-edge technologies." />
+    <meta name="twitter:image" content="https://rassaisaid.me/portfolio.png" />
+    <meta name="twitter:image:alt" content="RASSAI SAID - Interactive 3D Portfolio Preview" />
+    <meta name="twitter:creator" content="@rassaisaid" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://rassaisaid.me/" />
+    
+    <!-- Performance & Security -->
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#FFEB3B" />
+    
+    <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Edu+VIC+WA+NT+Hand+Pre:wght@400..700&display=swap" rel="stylesheet">
-    <title>Vite + React + TS</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="modulepreload" href="/src/main.tsx" />
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'GA_MEASUREMENT_ID', {
+        page_title: 'Interactive 3D Portfolio | RASSAI SAID',
+        custom_map: {'custom_parameter': 'portfolio_view'}
+      });
+    </script>
+    
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "RASSAI SAID",
+      "url": "https://rassaisaid.me",
+      "image": "https://rassaisaid.me/portfolio.png",
+      "sameAs": [
+        "https://github.com/rassaisaid",
+        "https://linkedin.com/in/rassaisaid"
+      ],
+      "jobTitle": "Full Stack Developer",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "Freelance"
+      },
+      "description": "Interactive 3D portfolio showcasing modern web development projects with React Three Fiber, GSAP animations, and cutting-edge technologies.",
+      "knowsAbout": ["React", "TypeScript", "Three.js", "Web Development", "3D Graphics", "GSAP"]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
