@@ -2,15 +2,31 @@
 
 A modern minimalist single-page application built with Vite, React, TypeScript, featuring GSAP animations and React Three Fiber 3D graphics.
 
-## 🚀 Features
+## 🚀 Quick Start
 
-- **Modern Tech Stack**: Vite + React + TypeScript for fast development
-- **3D Graphics**: Interactive 3D elements with React Three Fiber
-- **Smooth Animations**: GSAP-powered animations with scroll triggers
-- **Minimalist Design**: Clean typography and generous whitespace
-- **Responsive**: Mobile-first design that works across all devices
-- **Performance Focused**: Optimized for fast loading and smooth interactions
-- **Accessible**: Respects user preferences for reduced motion
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+## 📁 Documentation
+
+Comprehensive guides are available in the [`docs/`](./docs/) folder:
+
+- **[Deployment Guide](./docs/DEPLOYMENT_GUIDE.md)** - Step-by-step deployment instructions
+- **[Build Guide](./docs/BUILD_GUIDE.md)** - Production build configuration
+- **[MIME Type Fix](./docs/MIME_TYPE_FIX.md)** - Solving JavaScript module loading issues
+- **[Interaction Features](./docs/INTERACTION_FEATURES.md)** - 3D interactions and animations
+- **[Production Guide](./docs/PRODUCTION_GUIDE.md)** - Performance optimizations
 
 ## 🛠️ Tech Stack
 
@@ -21,33 +37,6 @@ A modern minimalist single-page application built with Vite, React, TypeScript, 
 - **Styling**: Tailwind CSS
 - **Icons**: Lucide React
 - **Development**: ESLint, TypeScript
-
-## 📦 Installation
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd changelog_portfolio
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Start the development server:
-```bash
-npm run dev
-```
-
-4. Open your browser and navigate to `http://localhost:5173`
-
-## 📝 Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
 
 ## 🏗️ Project Structure
 
