@@ -1,26 +1,90 @@
 import { useState, useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Send, Mail, MapPin, Phone, Github, Linkedin } from 'lucide-react'
+import ReCAPTCHA from 'react-google-recaptcha'
+import { Send, Mail, MapPin, Phone, Github, Linkedin, Shield, Clock, AlertTriangle, CheckCircle } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
+
+// Enhanced security utilities
+const validateEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email) && email.length <= 254
+}
+
+const validateName = (name: string): boolean => {
+  // Only allow letters, spaces, hyphens, apostrophes, and some international characters
+  const nameRegex = /^[a-zA-ZÀ-ÿ\s\-'\.]+$/
+  return nameRegex.test(name) && name.length >= 2 && name.length <= 50
+}
+
+const containsSpam = (text: string): boolean => {
+  const spamWords = [
+    'viagra', 'casino', 'lottery', 'winner', 'click here', 'buy now', 
+    'free money', 'investment opportunity', 'get rich quick', 'make money fast',
+    'guaranteed income', 'no experience required', 'work from home',
+    'bitcoin', 'crypto', 'forex', 'trading', 'loan', 'debt', 'credit repair',
+    'seo services', 'cheap pills', 'weight loss', 'enlargement'
+  ]
+  const lowerText = text.toLowerCase()
+  return spamWords.some(word => lowerText.includes(word))
+}
+
+const containsSuspiciousPatterns = (text: string): boolean => {
+  // Check for suspicious patterns
+  const patterns = [
+    /https?:\/\/[^\s]+/g, // URLs
+    /\b\d{10,}\b/g, // Long numbers (phone/credit card)
+    /[A-Z]{5,}/g, // Too many consecutive capitals
+    /(.)\1{4,}/g // Repeated characters (aaaaa)
+  ]
+  
+  return patterns.some(pattern => pattern.test(text))
+}
+
+interface SubmissionState {
+  isSubmitting: boolean
+  isSuccess: boolean
+  message: string
+}
+
+// reCAPTCHA configuration
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || import.meta.env.VITE_RECAPTCHA_SITE_KEY_DEV || '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
 
 const Contact = () => {
   const sectionRef = useRef<HTMLElement>(null)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const infoRef = useRef<HTMLDivElement>(null)
-
+  const recaptchaRef = useRef<ReCAPTCHA>(null)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    message: '',
+    honeypot: '' // Invisible field to catch bots
+  })
+
+  const [submissionState, setSubmissionState] = useState<SubmissionState>({
+    isSubmitting: false,
+    isSuccess: false,
     message: ''
   })
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitAttempts, setSubmitAttempts] = useState(0)
+  const [lastSubmitTime, setLastSubmitTime] = useState(0)
+  const [errors, setErrors] = useState<{[key: string]: string}>({})
+  const [startTime] = useState(Date.now())
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null)
+
+  // Enhanced rate limiting - max 3 submissions per 15 minutes
+  const RATE_LIMIT = 3
+  const RATE_WINDOW = 15 * 60 * 1000 // 15 minutes
+  const MIN_FORM_TIME = 3000 // Minimum 3 seconds to fill form (anti-bot)
+  const MAX_FORM_TIME = 30 * 60 * 1000 // Maximum 30 minutes (session timeout)
 
   useEffect(() => {
-    const ctx = gsap.context(() => {      gsap.fromTo(titleRef.current,
+    const ctx = gsap.context(() => {
+      gsap.fromTo(titleRef.current,
         { opacity: 0, y: 20 },
         {
           opacity: 1,
@@ -54,27 +118,160 @@ const Contact = () => {
 
     return () => ctx.revert()
   }, [])
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
+    
+    // Clear errors and success state on input change
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }))
+    }
+    
+    if (submissionState.isSuccess) {
+      setSubmissionState(prev => ({ ...prev, isSuccess: false, message: '' }))
+    }
+    
     setFormData(prev => ({
       ...prev,
       [name]: value
     }))
   }
 
+  const handleRecaptchaChange = (token: string | null) => {
+    setRecaptchaToken(token)
+    
+    // Clear reCAPTCHA error if user completes it
+    if (token && errors.recaptcha) {
+      setErrors(prev => ({ ...prev, recaptcha: '' }))
+    }
+  }
+
+  const handleRecaptchaExpired = () => {
+    setRecaptchaToken(null)
+    setErrors(prev => ({ ...prev, recaptcha: 'reCAPTCHA expired. Please complete it again.' }))
+  }
+
+  const handleRecaptchaError = () => {
+    setRecaptchaToken(null)
+    setErrors(prev => ({ ...prev, recaptcha: 'reCAPTCHA failed to load. Please refresh and try again.' }))
+  }
+
+  const validateForm = (): boolean => {
+    const newErrors: {[key: string]: string} = {}
+
+    // Honeypot check (bot detection)
+    if (formData.honeypot) {
+      newErrors.general = 'Suspicious activity detected. Please refresh and try again.'
+      setErrors(newErrors)
+      return false
+    }
+
+    // Time-based validation (too fast = bot, too slow = session timeout)
+    const timeTaken = Date.now() - startTime
+    if (timeTaken < MIN_FORM_TIME) {
+      newErrors.general = 'Please take a moment to review your message before submitting.'
+      setErrors(newErrors)
+      return false
+    }
+    
+    if (timeTaken > MAX_FORM_TIME) {
+      newErrors.general = 'Session expired. Please refresh the page and try again.'
+      setErrors(newErrors)
+      return false
+    }
+
+    // Rate limiting check
+    const now = Date.now()
+    if (submitAttempts >= RATE_LIMIT && (now - lastSubmitTime) < RATE_WINDOW) {
+      const waitTime = Math.ceil((RATE_WINDOW - (now - lastSubmitTime)) / 60000)
+      newErrors.general = `Too many submissions. Please wait ${waitTime} minutes before trying again.`
+      setErrors(newErrors)
+      return false
+    }
+
+    // Name validation
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required'
+    } else if (!validateName(formData.name)) {
+      newErrors.name = 'Please enter a valid name (2-50 characters, letters and spaces only)'
+    } else if (containsSpam(formData.name)) {
+      newErrors.name = 'Name contains prohibited content'
+    }
+
+    // Email validation
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required'
+    } else if (!validateEmail(formData.email)) {
+      newErrors.email = 'Please enter a valid email address'
+    }
+
+    // Message validation
+    if (!formData.message.trim()) {
+      newErrors.message = 'Message is required'
+    } else if (formData.message.length < 10) {
+      newErrors.message = 'Message must be at least 10 characters long'
+    } else if (formData.message.length > 1000) {
+      newErrors.message = 'Message must be less than 1000 characters'
+    } else if (containsSpam(formData.message)) {
+      newErrors.message = 'Message contains prohibited content. Please keep it professional.'    } else if (containsSuspiciousPatterns(formData.message)) {
+      newErrors.message = 'Message contains suspicious content. Please avoid URLs and excessive formatting.'
+    }
+
+    // reCAPTCHA validation
+    if (!recaptchaToken) {
+      newErrors.recaptcha = 'Please complete the reCAPTCHA verification'
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)    
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000))
     
-    // Reset form
-    setFormData({ name: '', email: '', message: '' })
-    setIsSubmitting(false)
+    if (!validateForm()) {
+      return
+    }
+
+    setSubmissionState(prev => ({ ...prev, isSubmitting: true, message: '', isSuccess: false }))
     
-    // Show success message (you can implement this)
-    alert('Message sent successfully!')
+    try {
+      // Update rate limiting
+      setSubmitAttempts(prev => prev + 1)
+      setLastSubmitTime(Date.now())
+      
+      // Here you would integrate with your backend service
+      // For example: Netlify Forms, EmailJS, or custom API
+      
+      // Simulate form submission with security checks
+      await new Promise(resolve => setTimeout(resolve, 2000))
+        // Reset form on success
+      setFormData({ name: '', email: '', message: '', honeypot: '' })
+      setRecaptchaToken(null)
+      
+      // Reset reCAPTCHA
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset()
+      }
+      
+      // Show success message
+      setSubmissionState({
+        isSubmitting: false,
+        isSuccess: true,
+        message: 'Thank you! Your message has been sent successfully. I\'ll get back to you soon.'
+      })
+        } catch (error) {
+      // Reset reCAPTCHA on error
+      setRecaptchaToken(null)
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset()
+      }
+      
+      setSubmissionState({
+        isSubmitting: false,
+        isSuccess: false,
+        message: 'Failed to send message. Please try again or contact me directly via email.'
+      })
+    }
   }
 
   const contactInfo = [
@@ -110,7 +307,8 @@ const Contact = () => {
     }
   ]
 
-  return (    <section 
+  return (
+    <section 
       id="contact" 
       ref={sectionRef}
       className="pt-12 pb-20 px-4 sm:px-6 bg-white"
@@ -126,71 +324,184 @@ const Contact = () => {
             TOUCH
           </span>
         </h2>
-        
-        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12">          {/* Contact Form */}
+
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12">
+          {/* Contact Form */}
           <form ref={formRef} onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+            {/* Security Notice */}
+            <div className="flex items-center gap-2 text-sm text-neutral-600 bg-neutral-50 p-3 rounded-lg border">
+              <Shield className="h-4 w-4 text-green-600" />
+              <span>This form is protected against spam and abuse</span>
+            </div>
+
+            {/* Success Message */}
+            {submissionState.isSuccess && (
+              <div className="flex items-start gap-2 text-sm text-green-700 bg-green-50 p-3 rounded-lg border border-green-200">
+                <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                <span>{submissionState.message}</span>
+              </div>
+            )}
+
+            {/* Error Messages */}
+            {errors.general && (
+              <div className="flex items-start gap-2 text-sm text-red-700 bg-red-50 p-3 rounded-lg border border-red-200">
+                <AlertTriangle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                <span>{errors.general}</span>
+              </div>
+            )}
+
+            {submissionState.message && !submissionState.isSuccess && !errors.general && (
+              <div className="flex items-start gap-2 text-sm text-red-700 bg-red-50 p-3 rounded-lg border border-red-200">
+                <AlertTriangle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                <span>{submissionState.message}</span>
+              </div>
+            )}
+
+            {/* Honeypot field (hidden from humans, visible to bots) */}
+            <input
+              type="text"
+              name="honeypot"
+              value={formData.honeypot}
+              onChange={handleInputChange}
+              style={{ 
+                position: 'absolute',
+                left: '-9999px',
+                width: '1px',
+                height: '1px',
+                opacity: 0
+              }}
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+            />
+            
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-2">
-                Name
-              </label>              <input
+                Name *
+              </label>
+              <input
                 type="text"
                 id="name"
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-sm sm:text-base bg-white text-neutral-900"
-                placeholder="Your name"
+                maxLength={50}
+                disabled={submissionState.isSubmitting}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-sm sm:text-base bg-white text-neutral-900 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  errors.name ? 'border-red-300 bg-red-50' : 'border-neutral-300'
+                }`}
+                placeholder="Your full name"
               />
+              {errors.name && (
+                <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+              )}
             </div>
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2">
-                Email
-              </label>              <input
+                Email *
+              </label>
+              <input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-sm sm:text-base bg-white text-neutral-900"
+                maxLength={254}
+                disabled={submissionState.isSubmitting}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-sm sm:text-base bg-white text-neutral-900 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  errors.email ? 'border-red-300 bg-red-50' : 'border-neutral-300'
+                }`}
                 placeholder="your.email@example.com"
               />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+              )}
             </div>
 
             <div>
               <label htmlFor="message" className="block text-sm font-medium text-neutral-700 mb-2">
-                Message
-              </label>              <textarea
+                Message *
+              </label>
+              <textarea
                 id="message"
                 name="message"
                 value={formData.message}
                 onChange={handleInputChange}
                 required
-                rows={4}
-                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none text-sm sm:text-base sm:rows-6 bg-white text-neutral-900"
-                placeholder="Tell me about your project..."
+                rows={5}
+                maxLength={1000}
+                disabled={submissionState.isSubmitting}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-sm sm:text-base bg-white text-neutral-900 resize-none disabled:opacity-50 disabled:cursor-not-allowed ${
+                  errors.message ? 'border-red-300 bg-red-50' : 'border-neutral-300'
+                }`}
+                placeholder="Your message (minimum 10 characters)..."
               />
+              <div className="flex justify-between items-center mt-1">
+                {errors.message ? (
+                  <p className="text-sm text-red-600">{errors.message}</p>
+                ) : (
+                  <span></span>
+                )}
+                <span className={`text-xs ${formData.message.length > 900 ? 'text-orange-500' : 'text-neutral-500'}`}>
+                  {formData.message.length}/1000
+                </span>
+              </div>            </div>
+
+            {/* reCAPTCHA */}
+            <div className="space-y-2">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={RECAPTCHA_SITE_KEY}
+                onChange={handleRecaptchaChange}
+                onExpired={handleRecaptchaExpired}
+                onError={handleRecaptchaError}
+                size="normal"
+                theme="light"
+                className="flex justify-start"
+              />
+              {errors.recaptcha && (
+                <p className="text-sm text-red-600">{errors.recaptcha}</p>
+              )}
             </div>
+
             <button
               type="submit"
-              disabled={isSubmitting}
-              className="w-full px-6 sm:px-8 py-2.5 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300 font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+              disabled={submissionState.isSubmitting || submissionState.isSuccess}
+              className="w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-3 bg-neutral-900 text-white font-medium rounded-lg hover:bg-neutral-800 focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
             >
-              {isSubmitting ? (
+              {submissionState.isSubmitting ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                   Sending...
+                </>
+              ) : submissionState.isSuccess ? (
+                <>
+                  <CheckCircle className="h-4 w-4" />
+                  Message Sent
                 </>
               ) : (
                 <>
-                  <Send size={18} />
+                  <Send className="h-4 w-4" />
                   Send Message
                 </>
               )}
-            </button>
-          </form>          {/* Contact Info */}
+            </button>            {/* Security Info */}
+            <div className="text-xs text-neutral-500 space-y-1 bg-neutral-50 p-3 rounded-lg">
+              <div className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                <span>Rate limited to prevent abuse (max 3 submissions per 15 minutes)</span>
+              </div>
+              <p>• Protected by Google reCAPTCHA v2</p>
+              <p>• All messages are automatically screened for spam</p>
+              <p>• Your information is never shared with third parties</p>
+              <p>• Form submissions are logged for security purposes</p>
+            </div>
+          </form>
+
+          {/* Contact Info */}
           <div ref={infoRef} className="space-y-6 sm:space-y-8">
             <div>
               <h3 className="font-medium text-lg mb-3 sm:mb-4">Let's work together</h3>
@@ -217,6 +528,17 @@ const Contact = () => {
                   </div>
                 </a>
               ))}
+            </div>
+
+            {/* Response Time Notice */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <div className="flex items-start gap-2">
+                <Clock className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                <div className="text-sm text-blue-700">
+                  <p className="font-medium">Response Time</p>
+                  <p>I typically respond within 24-48 hours during business days.</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
