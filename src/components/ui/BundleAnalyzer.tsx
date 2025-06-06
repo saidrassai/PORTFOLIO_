@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, memo } from 'react'
-import { Activity, Monitor, Zap, Clock } from '../../utils/icons'
+import { Activity, Monitor, Zap } from '../../utils/icons'
 
 interface BundleStats {
   totalSize: number
