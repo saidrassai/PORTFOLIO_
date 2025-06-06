@@ -28,7 +28,7 @@ export default defineConfig({
           'three-core': ['three'],
           'three-fiber': ['@react-three/fiber'],
           'three-drei': ['@react-three/drei'],
-          'three-rapier': ['@react-three/rapier'],
+          // Note: @react-three/rapier is intentionally excluded to allow lazy loading
           'three-postprocessing': ['@react-three/postprocessing'],
           ui: ['lucide-react', 'gsap'],
           recaptcha: ['react-google-recaptcha'],

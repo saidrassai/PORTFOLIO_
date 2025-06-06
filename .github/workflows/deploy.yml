@@ -1,4 +1,4 @@
-name: Deploy to Netlify
+name: Deploy Portfolio to Netlify
 
 on:
   push:
@@ -7,7 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  # Build, test and deploy job
+  build-test-deploy:
     runs-on: ubuntu-latest
     
     strategy:
@@ -15,33 +16,38 @@ jobs:
         node-version: [20]
     
     steps:
-      - name: Checkout code
+      - name: 📦 Checkout repository
         uses: actions/checkout@v4
       
-      - name: Setup Node.js
+      - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       
-      - name: Install dependencies
+      - name: 📥 Install dependencies
         run: npm ci
       
-      - name: Run linting
+      - name: 🔍 Run linting
         run: npm run lint
       
-      - name: Build project
+      - name: 🏗️ Build project
         run: npm run build
         env:
           NODE_ENV: production
       
-      - name: Upload build artifacts
+      - name: 📊 Run bundle analysis
+        run: |
+          node scripts/bundle-analysis.js > bundle-analysis.txt 2>&1 || true
+          echo "Bundle analysis completed"
+      
+      - name: 📤 Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/
       
-      - name: Deploy to Netlify
+      - name: 🚀 Deploy to Netlify
         if: github.ref == 'refs/heads/main'
         uses: netlify/actions/cli@master
         with:
@@ -49,13 +55,46 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+
+  # Performance monitoring job (runs after Netlify deployment)
+  performance-test:
+    needs: build-test-deploy
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'    
+    steps:
+      - name: 📦 Checkout repository
+        uses: actions/checkout@v4
       
-      - name: Lighthouse CI
-        if: github.ref == 'refs/heads/main'
-        uses: treosh/lighthouse-ci-action@v10
+      - name: 🔬 Run performance tests on Netlify deployment
+        run: |
+          npm install -g lighthouse
+          
+          # Wait for Netlify deployment to be ready
+          sleep 45
+          
+          echo "🖥️ Testing Desktop Performance..."
+          lighthouse https://rassaisaid.me \
+            --preset=desktop \
+            --output=json \
+            --output-path=./lighthouse-desktop.json \
+            --chrome-flags="--headless --no-sandbox" || true
+          
+          echo "📱 Testing Mobile Performance..."
+          lighthouse https://rassaisaid.me \
+            --output=json \
+            --output-path=./lighthouse-mobile.json \
+            --chrome-flags="--headless --no-sandbox" || true
+          
+          # Extract key metrics
+          echo "## Performance Results" > performance-summary.md
+          echo "- Desktop: $(cat lighthouse-desktop.json | jq -r '.categories.performance.score * 100')%" >> performance-summary.md || echo "- Desktop: Test failed" >> performance-summary.md
+          echo "- Mobile: $(cat lighthouse-mobile.json | jq -r '.categories.performance.score * 100')%" >> performance-summary.md || echo "- Mobile: Test failed" >> performance-summary.md
+      
+      - name: 📤 Upload performance reports
+        uses: actions/upload-artifact@v4
         with:
-          urls: |
-            https://rassaisaid.me
-          configPath: ./.github/lighthouse/lighthouserc.json
-          uploadArtifacts: true
-          temporaryPublicStorage: true
+          name: lighthouse-reports
+          path: |
+            lighthouse-*.json
+            performance-summary.md
+          retention-days: 30

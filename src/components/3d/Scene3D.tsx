@@ -1,10 +1,12 @@
 import * as THREE from 'three'
-import { useRef, useReducer, useMemo, useState, useEffect, memo } from 'react'
+import React, { useRef, useReducer, useMemo, useState, useEffect, memo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { useGLTF, MeshTransmissionMaterial, Environment, Lightformer } from '@react-three/drei'
-import { CuboidCollider, BallCollider, Physics, RigidBody } from '@react-three/rapier'
+import { Environment, Lightformer } from '@react-three/drei'
 import { EffectComposer, N8AO } from '@react-three/postprocessing'
-import { easing } from 'maath'
+import { LODConnector } from './LODConnector'
+import { ConditionalPhysics } from './ConditionalPhysics'
+import { ConditionalRigidBody } from './ConditionalRigidBody'
+import { ConditionalCuboidCollider, ConditionalBallCollider } from './ConditionalColliders'
 
 // Define types
 interface ConnectorProps {
@@ -19,15 +21,9 @@ interface ConnectorProps {
   [key: string]: any
 }
 
-interface ModelProps {
-  children?: React.ReactNode
-  color?: string
-  roughness?: number
-  [key: string]: any
-}
-
 interface PointerProps {
   vec?: THREE.Vector3
+  deviceCapabilities?: any
 }
 
 const accents = ['#4060ff', '#20ffa0', '#ff4060', '#ffcc00']
@@ -153,31 +149,28 @@ function Scene(props: any) {
                     castShadow={deviceCapabilities.shadowQuality !== 'low'}
                     shadow-mapSize-width={deviceCapabilities.shadowQuality === 'high' ? 2048 : 1024}
                     shadow-mapSize-height={deviceCapabilities.shadowQuality === 'high' ? 2048 : 1024}
-                />
-            )}
+                />            )}
             
-            <Physics 
+            <ConditionalPhysics 
+                enablePhysics={!deviceCapabilities.isLowEnd && !deviceCapabilities.isMobile}
+                deviceCapabilities={deviceCapabilities}
                 gravity={[0, 0, 0]}
                 timeStep={deviceCapabilities.isLowEnd ? 1/30 : 1/60}
                 paused={false}
                 updatePriority={0}
                 interpolate={!deviceCapabilities.isLowEnd}
-            >
-                <Pointer />
-                {limitedConnectors.map((props, i) => <Connector key={i} {...props} />)}
-                <Connector position={[10, 10, 5]}>
-                    <Model>
-                        <MeshTransmissionMaterial 
-                            clearcoat={1} 
-                            thickness={0.1} 
-                            anisotropicBlur={deviceCapabilities.isLowEnd ? 0.05 : 0.1} 
-                            chromaticAberration={deviceCapabilities.isLowEnd ? 0.05 : 0.1} 
-                            samples={deviceCapabilities.isLowEnd ? 4 : 8} 
-                            resolution={deviceCapabilities.isLowEnd ? 256 : 512} 
-                        />
-                    </Model>
+            >                <Pointer deviceCapabilities={deviceCapabilities} />
+                {limitedConnectors.map((props, i) => <Connector key={i} {...props} deviceCapabilities={deviceCapabilities} />)}                <Connector position={[10, 10, 5]} deviceCapabilities={deviceCapabilities}>
+                    <LODConnector
+                        clearcoat={1} 
+                        thickness={0.1} 
+                        anisotropicBlur={deviceCapabilities.isLowEnd ? 0.05 : 0.1} 
+                        chromaticAberration={deviceCapabilities.isLowEnd ? 0.05 : 0.1} 
+                        samples={deviceCapabilities.isLowEnd ? 4 : 8} 
+                        resolution={deviceCapabilities.isLowEnd ? 256 : 512} 
+                    />
                 </Connector>
-            </Physics>
+            </ConditionalPhysics>
               {deviceCapabilities.postProcessing && (
                 <EffectComposer multisampling={deviceCapabilities.isLowEnd ? 0 : 8}>
                     <N8AO 
@@ -201,7 +194,7 @@ function Scene(props: any) {
     )
 }
 
-function Connector({ position, children, vec = new THREE.Vector3(), scale, r = THREE.MathUtils.randFloatSpread, accent, ...props }: ConnectorProps) {
+function Connector({ position, children, vec = new THREE.Vector3(), scale, r = THREE.MathUtils.randFloatSpread, accent, deviceCapabilities, ...props }: ConnectorProps & { deviceCapabilities: any }) {
     const api = useRef<any>(null);
     const tempVec = useMemo(() => new THREE.Vector3(), []);
     const lastCollisionTime = useRef(0);
@@ -284,29 +277,40 @@ function Connector({ position, children, vec = new THREE.Vector3(), scale, r = T
             }
         }
     })
-    
-    return (
-        <RigidBody 
-            linearDamping={4} 
-            angularDamping={1} 
-            friction={0.1} 
-            position={pos} 
-            ref={api} 
-            colliders={false}
-            onCollisionEnter={handleCollision}
-            userData={{ isConnector: true }}
-            mass={1.5}
-        >
-            <CuboidCollider args={[0.38, 1.27, 0.38]} />
-            <CuboidCollider args={[1.27, 0.38, 0.38]} />
-            <CuboidCollider args={[0.38, 0.38, 1.27]} />
-            {children ? children : <Model {...props} />}
-            {accent && <pointLight intensity={4} distance={2.5} color={props.color} />}
-        </RigidBody>
+      return (            <ConditionalRigidBody 
+                enablePhysics={!deviceCapabilities.isLowEnd && !deviceCapabilities.isMobile}
+                linearDamping={4} 
+                angularDamping={1} 
+                friction={0.1} 
+                position={pos} 
+                ref={api} 
+                colliders={false}
+                onCollisionEnter={handleCollision}
+                userData={{ isConnector: true }}
+                mass={1.5}
+            >                {(!deviceCapabilities.isLowEnd && !deviceCapabilities.isMobile) && (
+                    <>
+                        <ConditionalCuboidCollider 
+                            enablePhysics={!deviceCapabilities.isLowEnd && !deviceCapabilities.isMobile}
+                            args={[0.38, 1.27, 0.38]} 
+                        />
+                        <ConditionalCuboidCollider 
+                            enablePhysics={!deviceCapabilities.isLowEnd && !deviceCapabilities.isMobile}
+                            args={[1.27, 0.38, 0.38]} 
+                        />
+                        <ConditionalCuboidCollider 
+                            enablePhysics={!deviceCapabilities.isLowEnd && !deviceCapabilities.isMobile}
+                            args={[0.38, 0.38, 1.27]} 
+                        />
+                    </>
+                )}
+                {children ? children : <LODConnector {...props} />}
+                {accent && <pointLight intensity={4} distance={2.5} color={props.color} />}
+            </ConditionalRigidBody>
     )
 }
 
-function Pointer({ vec = new THREE.Vector3() }: PointerProps) {
+function Pointer({ vec = new THREE.Vector3(), deviceCapabilities }: PointerProps & { deviceCapabilities: any }) {
     const ref = useRef<any>(null);
     const prevPosition = useMemo(() => new THREE.Vector3(), []);
     const [velocity, setVelocity] = useState(0);
@@ -343,7 +347,9 @@ function Pointer({ vec = new THREE.Vector3() }: PointerProps) {
             
             // Update pointer position
             vec.set(x, y, z);
-            ref.current.setNextKinematicTranslation(vec);
+            if (ref.current.setNextKinematicTranslation) {
+                ref.current.setNextKinematicTranslation(vec);
+            }
             
             // Store userData for collision detection
             if (ref.current.rigidBody) {
@@ -360,7 +366,8 @@ function Pointer({ vec = new THREE.Vector3() }: PointerProps) {
     });
     
     return (
-        <RigidBody 
+        <ConditionalRigidBody 
+            enablePhysics={!deviceCapabilities.isLowEnd && !deviceCapabilities.isMobile}
             position={[0, 0, 0]} 
             type="kinematicPosition" 
             colliders={false} 
@@ -368,8 +375,14 @@ function Pointer({ vec = new THREE.Vector3() }: PointerProps) {
             userData={{ isPointer: true, velocity }}
             ccd={true} // Enable continuous collision detection for smoother interaction
             mass={active ? 30 : 15} // Heavier when clicking
-        >
-            <BallCollider args={[active ? 3 : 2]} friction={0.1} restitution={0.2} />
+        >            {(!deviceCapabilities.isLowEnd && !deviceCapabilities.isMobile) && (
+                <ConditionalBallCollider 
+                    enablePhysics={!deviceCapabilities.isLowEnd && !deviceCapabilities.isMobile}
+                    args={[active ? 3 : 2]} 
+                    friction={0.1} 
+                    restitution={0.2} 
+                />
+            )}
             
             {/* Debug visualization - only in development */}
           {/*  {import.meta.env.DEV && (
@@ -378,28 +391,7 @@ function Pointer({ vec = new THREE.Vector3() }: PointerProps) {
                     <meshBasicMaterial color={active ? "white" : "white"} wireframe transparent opacity={0.2} />
                 </mesh>
             )} */}
-        </RigidBody>
-    )
-}
-
-function Model({ children, color = 'white', roughness = 0 }: ModelProps) {
-    const ref = useRef<THREE.Mesh>(null!);
-    // Using a fallback model when the actual one isn't available
-    const modelPath = '/models/connector.glb'; // Using the existing connector model
-    const { nodes, materials } = useGLTF(modelPath);
-    
-    useFrame((_state, delta) => {
-        if (ref.current?.material) {
-            easing.dampC((ref.current.material as THREE.MeshStandardMaterial).color, color, 0.2, delta)
-        }
-    })
-    
-    return (
-        <mesh ref={ref} castShadow receiveShadow scale={8} geometry={(nodes as any).connector.geometry}>
-            <meshStandardMaterial metalness={0.2} roughness={roughness} map={(materials as any).base.map} />
-            {children}
-        </mesh>
-    )
+        </ConditionalRigidBody>    )
 }
 
 // Create Scene3D component with exported name

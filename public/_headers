@@ -1,4 +1,17 @@
 /*
+  # HTTP/2 Server Push hints for critical resources
+  Link: </assets/inter-var-*.woff2>; rel=preload; as=font; type=font/woff2; crossorigin
+  Link: </assets/index-*.css>; rel=preload; as=style
+  Link: </assets/index-*.js>; rel=preload; as=script
+  Link: </assets/vendor-*.js>; rel=preload; as=script
+  
+  # Prefetch likely next resources
+  Link: </models-optimized/connector.glb>; rel=prefetch; as=fetch; crossorigin
+  Link: </tech-icons-optimized/react.webp>; rel=prefetch; as=image
+  Link: </tech-icons-optimized/typescript-icon.webp>; rel=prefetch; as=image
+  Link: </tech-icons-optimized/javascript.webp>; rel=prefetch; as=image
+  
+  # Security and performance headers
   X-Frame-Options: DENY
   X-XSS-Protection: 1; mode=block
   X-Content-Type-Options: nosniff
@@ -43,3 +56,30 @@
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
+
+# 3D models and large assets - long cache with preload hints
+/models-optimized/*
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: model/gltf-binary
+
+# Optimized tech icons - long cache
+/tech-icons-optimized/*.webp
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: image/webp
+
+/tech-icons-optimized/*.avif
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: image/avif
+
+/tech-icons-optimized/*.png
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: image/png
+
+# Service Worker gets special treatment
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+  Content-Type: application/javascript; charset=utf-8
+
+# HTML files - no cache for main pages
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate

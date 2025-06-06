@@ -9,6 +9,7 @@ import PerformanceMonitorOverlay from './components/ui/PerformanceMonitorOverlay
 import LazySection from './components/ui/LazySection'
 import { initSmoothScrolling } from './utils/smoothScroll'
 import { useMemoryMonitor, memoryUtils } from './utils/memoryManagement'
+import { usePrefetching, defaultPrefetchConfig } from './utils/advancedPrefetcher'
 
 // Lazy load heavy components
 const About = lazy(() => import('./components/sections/About'))
@@ -21,6 +22,9 @@ const Contact = lazy(() => import('./components/sections/Contact'))
 function App() {
   const [isLoading, setIsLoading] = useState(true)
   const [showPerformanceMonitor, setShowPerformanceMonitor] = useState(false)
+
+  // Initialize advanced prefetching
+  usePrefetching(defaultPrefetchConfig)
 
   // Monitor memory usage
   const { memoryUsage, isHighMemory } = useMemoryMonitor(150, (usage) => {
