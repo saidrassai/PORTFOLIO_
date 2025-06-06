@@ -47,11 +47,11 @@ function sendToAnalytics(metric: Metric) {
         metric_id: metric.id,
         metric_delta: metric.delta,
       }
-    });
-  }
-  // Send to custom analytics endpoint (disabled for now to avoid 404s)
-  if (false && import.meta.env.PROD && typeof window !== 'undefined') {
-    fetch('/api/analytics', {
+    });  }
+  
+  // Send to custom analytics endpoint (Netlify function)
+  if (import.meta.env.PROD && typeof window !== 'undefined') {
+    fetch('/.netlify/functions/analytics', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -64,7 +64,12 @@ function sendToAnalytics(metric: Metric) {
         url: window.location.href,
         userAgent: navigator.userAgent,
       }),
-    }).catch(err => console.warn('Analytics failed:', err));
+    }).catch(err => {
+      // Silently handle errors to avoid console noise
+      if (import.meta.env.DEV) {
+        console.warn('Analytics failed:', err);
+      }
+    });
   }
 }
 

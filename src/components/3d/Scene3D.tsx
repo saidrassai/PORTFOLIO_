@@ -133,37 +133,37 @@ function Scene(props: any) {
             {...props}
         >
             <color attach="background" args={['black']} />
-            <ambientLight intensity={0.4} />
-            {deviceCapabilities.shadowQuality !== 'off' && (
+            <ambientLight intensity={0.4} />            {deviceCapabilities.shadowQuality !== 'off' && (
                 <spotLight 
-                    position={[10, 10, 10]} 
+                    position={[10, 10, 10]}
                     angle={0.15} 
                     penumbra={1} 
                     intensity={1} 
                     castShadow={deviceCapabilities.shadowQuality !== 'low'}
                     shadow-mapSize-width={deviceCapabilities.shadowQuality === 'high' ? 2048 : 1024}
                     shadow-mapSize-height={deviceCapabilities.shadowQuality === 'high' ? 2048 : 1024}
-                />            )}              {/* Temporarily disable physics to fix context error */}
-              <>
-                  {limitedConnectors.map((props, i) => {
-                      const r = THREE.MathUtils.randFloatSpread;
-                      const pos = [r(10), r(10), r(10)] as [number, number, number];
-                      return (
-                          <StaticConnector key={i} position={pos} deviceCapabilities={deviceCapabilities} {...props} />
-                      );
-                  })}
-                  <StaticConnector position={[10, 10, 5]} deviceCapabilities={deviceCapabilities}>
-                      <LODConnector
-                          clearcoat={1} 
-                          thickness={0.1} 
-                          anisotropicBlur={0.05} 
-                          chromaticAberration={0.05} 
-                          samples={4} 
-                          resolution={256} 
-                      />
-                  </StaticConnector>
-              </>
-              {deviceCapabilities.postProcessing && (
+                />
+            )}
+            <>
+                {limitedConnectors.map((props, i) => {
+                    const r = THREE.MathUtils.randFloatSpread;
+                    const pos = [r(10), r(10), r(10)] as [number, number, number];
+                    return (
+                        <StaticConnector key={i} position={pos} deviceCapabilities={deviceCapabilities} {...props} />
+                    );
+                })}
+                <StaticConnector position={[10, 10, 5]} deviceCapabilities={deviceCapabilities}>
+                    <LODConnector
+                        clearcoat={1} 
+                        thickness={0.1} 
+                        anisotropicBlur={0.05} 
+                        chromaticAberration={0.05} 
+                        samples={4} 
+                        resolution={256} 
+                    />
+                </StaticConnector>
+            </>
+            {deviceCapabilities.postProcessing && (
                 <EffectComposer multisampling={deviceCapabilities.isLowEnd ? 0 : 8}>
                     <N8AO 
                         distanceFalloff={1} 

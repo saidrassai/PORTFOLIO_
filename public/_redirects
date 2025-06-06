@@ -1,11 +1,2 @@
 # SPA Routing - redirect all non-file requests to index.html
 /*    /index.html   200
-
-# API endpoints that don't exist - return 204 No Content to prevent errors
-/api/analytics  204
-/api/*          204
-
-# Handle missing font files gracefully
-/*.woff2  404
-/*.woff   404
-/*.ttf    404
