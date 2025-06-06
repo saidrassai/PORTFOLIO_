@@ -40,25 +40,11 @@ self.addEventListener('install', (event) => {
         console.log('📦 Precaching static assets')
         return cache.addAll(STATIC_ASSETS)
       }),
-      
-      // Preload critical fonts
+        // Preload critical fonts - updated approach to avoid 404s
       caches.open(FONT_CACHE_NAME).then((cache) => {
-        console.log('🔤 Precaching fonts')
-        const fontUrls = [
-          'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2',
-          'https://fonts.gstatic.com/s/eduvicwantbeginnerprint/v6/4iCT6KZ0a9NXjF8aUir7tuPfLdsKyQcqiGsUNWCpxw42J6AjvwY3eY4.woff2'
-        ]
-        return Promise.allSettled(
-          fontUrls.map(url => 
-            fetch(url).then(response => {
-              if (response.ok) {
-                cache.put(url, response)
-              }
-            }).catch(() => {
-              console.warn('Failed to cache font:', url)
-            })
-          )
-        )
+        console.log('🔤 Font cache ready (fonts will be cached on demand)')
+        // Don't preload specific font URLs since they can change
+        // Instead, let them be cached when requested
       })
     ]).then(() => {
       console.log('✅ Service Worker installation complete')

@@ -49,9 +49,8 @@ function sendToAnalytics(metric: Metric) {
       }
     });
   }
-
-  // Send to custom analytics endpoint
-  if (import.meta.env.PROD && typeof window !== 'undefined') {
+  // Send to custom analytics endpoint (disabled for now to avoid 404s)
+  if (false && import.meta.env.PROD && typeof window !== 'undefined') {
     fetch('/api/analytics', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
