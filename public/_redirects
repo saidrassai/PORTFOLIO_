@@ -2,7 +2,8 @@
 /*    /index.html   200
 
 # API endpoints that don't exist - return 204 No Content to prevent errors
-/api/*  204
+/api/analytics  204
+/api/*          204
 
 # Handle missing font files gracefully
 /*.woff2  404

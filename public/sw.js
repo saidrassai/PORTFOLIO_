@@ -286,13 +286,13 @@ self.addEventListener('message', (event) => {
     event.respondWith(networkFirst(request))
   } else if (isHTMLRequest(request)) {
     // Network-first strategy for HTML (SPA routing)
-    event.respondWith(networkFirstHTML(request))
-  } else {
+    event.respondWith(networkFirstHTML(request))  } else {
     // Default to network-first
     event.respondWith(networkFirst(request))
   }
-})
 
+
+// Helper functions
 // Helper functions
 function isStaticAsset(request) {
   const url = new URL(request.url)
@@ -307,62 +307,6 @@ function isAPIRequest(request) {
 function isHTMLRequest(request) {
   const acceptHeader = request.headers.get('Accept')
   return acceptHeader && acceptHeader.includes('text/html')
-}
-
-// Cache-first strategy
-async function cacheFirst(request) {
-  try {
-    const cachedResponse = await caches.match(request)
-    if (cachedResponse) {
-      return cachedResponse
-    }
-    
-    const networkResponse = await fetch(request)
-    
-    // Cache successful responses
-    if (networkResponse.ok) {
-      const cache = await caches.open(CACHE_NAME)
-      cache.put(request, networkResponse.clone())
-    }
-    
-    return networkResponse
-  } catch (error) {
-    console.error('Cache-first strategy failed:', error)
-    // Return a fallback response if available
-    return caches.match('/offline.html') || new Response('Network error', { status: 503 })
-  }
-}
-
-// Network-first strategy
-async function networkFirst(request) {
-  try {
-    const networkResponse = await fetch(request)
-    
-    // Cache successful responses
-    if (networkResponse.ok) {
-      const cacheName = isAPIRequest(request) ? API_CACHE_NAME : CACHE_NAME
-      const cache = await caches.open(cacheName)
-      cache.put(request, networkResponse.clone())
-    }
-    
-    return networkResponse
-  } catch (error) {
-    console.log('Network failed, trying cache:', error)
-    const cachedResponse = await caches.match(request)
-    return cachedResponse || new Response('Offline', { status: 503 })
-  }
-}
-
-// Network-first strategy for HTML (SPA routing)
-async function networkFirstHTML(request) {
-  try {
-    const networkResponse = await fetch(request)
-    return networkResponse
-  } catch (error) {
-    console.log('Network failed for HTML, serving index.html:', error)
-    // For SPA routing, always serve index.html
-    return caches.match('/index.html') || fetch('/index.html')
-  }
 }
 
 // Listen for messages from the main thread
