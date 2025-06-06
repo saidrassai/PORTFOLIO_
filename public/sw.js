@@ -262,7 +262,7 @@ self.addEventListener('push', (event) => {
   }
 })
 
-// Message handling for cache updates
+// Message handling for cache updates and skip waiting
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     console.log('⚡ Skipping waiting...')
@@ -278,40 +278,28 @@ self.addEventListener('message', (event) => {
     )
   }
 })
-  if (isStaticAsset(request)) {
-    // Cache-first strategy for static assets
-    event.respondWith(cacheFirst(request))
-  } else if (isAPIRequest(request)) {
-    // Network-first strategy for API requests
-    event.respondWith(networkFirst(request))
-  } else if (isHTMLRequest(request)) {
-    // Network-first strategy for HTML (SPA routing)
-    event.respondWith(networkFirstHTML(request))  } else {
-    // Default to network-first
-    event.respondWith(networkFirst(request))
+
+// Network First strategy for HTML (SPA routing)
+async function networkFirstHTML(request) {
+  try {
+    const networkResponse = await fetch(request)
+    
+    if (networkResponse.ok) {
+      const cache = await caches.open(DYNAMIC_CACHE_NAME)
+      cache.put(request, networkResponse.clone())
+    }
+    
+    return networkResponse
+  } catch (error) {
+    // For SPA routing, always return index.html on navigation failure
+    const cache = await caches.open(STATIC_CACHE_NAME)
+    const indexResponse = await cache.match('/index.html')
+    
+    if (indexResponse) {
+      return indexResponse
+    }
+    
+    // Fallback to network index.html
+    return fetch('/index.html')
   }
-
-
-// Helper functions
-// Helper functions
-function isStaticAsset(request) {
-  const url = new URL(request.url)
-  return url.pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|webp|avif|woff|woff2|ico)$/)
 }
-
-function isAPIRequest(request) {
-  const url = new URL(request.url)
-  return url.pathname.startsWith('/api/')
-}
-
-function isHTMLRequest(request) {
-  const acceptHeader = request.headers.get('Accept')
-  return acceptHeader && acceptHeader.includes('text/html')
-}
-
-// Listen for messages from the main thread
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting()
-  }
-})
