@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import ReCAPTCHA from 'react-google-recaptcha'
-import { Send, Mail, MapPin, Phone, Github, Linkedin, Shield, Clock, AlertTriangle, CheckCircle } from 'lucide-react'
+import { Send, Mail, MapPin, Phone, Github, Linkedin, Shield, Clock, AlertTriangle, CheckCircle } from '../../utils/icons'
 
 gsap.registerPlugin(ScrollTrigger)
 

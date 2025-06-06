@@ -10,7 +10,17 @@
     "preview": "vite preview",
     "build:prod": "tsc -b && vite build --mode production",
     "analyze": "npx vite-bundle-analyzer dist/stats.html",
-    "serve": "vite preview --port 4173"
+    "serve": "vite preview --port 4173",
+    "convert-icons": "node scripts/convert-icons.js",
+    "optimize-images": "npm run convert-icons",
+    "optimize-models": "node scripts/optimize-models.js",
+    "extract-critical-css": "node scripts/extract-critical-css.js",
+    "optimize-critical-css": "node scripts/optimize-critical-css.js",
+    "performance-summary": "node scripts/performance-summary.js",
+    "optimize-css": "npm run optimize-critical-css",
+    "perf-test": "lighthouse http://localhost:4173 --output html --output-path ./lighthouse-report.html",
+    "perf-ci": "lhci autorun",
+    "test:perf": "npm run build && npm run serve & sleep 5 && npm run perf-test && kill %1"
   },
   "dependencies": {
     "@react-three/drei": "^10.1.2",
@@ -30,6 +40,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
+    "@lhci/cli": "^0.14.0",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.4.1",
@@ -38,7 +49,11 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
+    "gltf-pipeline": "^4.1.0",
+    "lighthouse": "^12.6.1",
     "postcss": "^8.5.4",
+    "puppeteer": "^24.10.0",
+    "sharp": "^0.34.2",
     "terser": "^5.41.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",

@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-06-05T22:03:41.627Z",
+  "inputDir": "D:\\changelog_portfolio\\public\\models",
+  "outputDir": "D:\\changelog_portfolio\\public\\models-optimized",
+  "files": [
+    {
+      "name": "connector.glb",
+      "originalSize": 177044,
+      "optimizedSize": 177200,
+      "compression": "-0.1"
+    }
+  ]
+}

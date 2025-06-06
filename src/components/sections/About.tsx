@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Calendar, MapPin, Code,  GraduationCap, Rocket,  Car,  Sun } from 'lucide-react'
+import { Calendar, MapPin, Code, GraduationCap, Rocket, Car, Sun } from '../../utils/icons'
 
 gsap.registerPlugin(ScrollTrigger)
 

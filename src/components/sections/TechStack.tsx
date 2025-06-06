@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState, memo } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import OptimizedImage from '../ui/OptimizedImage'
+import OptimizedTechIcon from '../ui/OptimizedTechIcon'
 import ParallaxBackground from '../ui/ParallaxBackground'
 import ParallaxContent from '../ui/ParallaxContent'
 
@@ -9,68 +9,89 @@ gsap.registerPlugin(ScrollTrigger)
 
 interface Technology {
   name: string
-  iconUrl: string
+  iconName: string
   category: 'frontend' | 'backend' | 'database' | 'cloud' | 'ai' | 'tools'
 }
 
-const TechStack = () => {
+const TechStack = memo(() => {
   const sectionRef = useRef<HTMLDivElement>(null)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const topRowRef = useRef<HTMLDivElement>(null)
   const bottomRowRef = useRef<HTMLDivElement>(null)
   const topRowAnimation = useRef<gsap.core.Tween | null>(null)
   const bottomRowAnimation = useRef<gsap.core.Tween | null>(null)
+  
+  // Progressive loading state
+  const [visibleIcons, setVisibleIcons] = useState(12) // Start with 12 icons
+  const [allIconsLoaded, setAllIconsLoaded] = useState(false)
 
   const technologies: Technology[] = [
     // Frontend & Languages
-    { name: 'React', iconUrl: '/tech-icons/react.svg', category: 'frontend' },
-    { name: 'TypeScript', iconUrl: '/tech-icons/typescript-icon.svg', category: 'frontend' },
-    { name: 'JavaScript', iconUrl: '/tech-icons/javascript.svg', category: 'frontend' },
-    { name: 'Next.js', iconUrl: '/tech-icons/nextjs-icon.svg', category: 'frontend' },
-    { name: 'Angular', iconUrl: '/tech-icons/angular-icon.svg', category: 'frontend' },
+    { name: 'React', iconName: 'react', category: 'frontend' },
+    { name: 'TypeScript', iconName: 'typescript-icon', category: 'frontend' },
+    { name: 'JavaScript', iconName: 'javascript', category: 'frontend' },
+    { name: 'Next.js', iconName: 'nextjs-icon', category: 'frontend' },
+    { name: 'Angular', iconName: 'angular-icon', category: 'frontend' },
     
     // Backend & Frameworks
-    { name: 'Node.js', iconUrl: '/tech-icons/nodejs.svg', category: 'backend' },
-    { name: 'Python', iconUrl: '/tech-icons/python.svg', category: 'backend' },
-    { name: 'C#', iconUrl: '/tech-icons/c-sharp.svg', category: 'backend' },
-    { name: '.NET', iconUrl: '/tech-icons/dotnet.svg', category: 'backend' },
-    { name: 'FastAPI', iconUrl: '/tech-icons/fastapi-icon.svg', category: 'backend' },
-    { name: 'Flask', iconUrl: '/tech-icons/flask.svg', category: 'backend' },
-    { name: 'LangChain', iconUrl: '/tech-icons/langchain.svg', category: 'backend' },
+    { name: 'Node.js', iconName: 'nodejs', category: 'backend' },
+    { name: 'Python', iconName: 'python', category: 'backend' },
+    { name: 'C#', iconName: 'c-sharp', category: 'backend' },
+    { name: '.NET', iconName: 'dotnet', category: 'backend' },
+    { name: 'FastAPI', iconName: 'fastapi-icon', category: 'backend' },
+    { name: 'Flask', iconName: 'flask', category: 'backend' },
+    { name: 'LangChain', iconName: 'langchain', category: 'backend' },
     
     // Databases
-    { name: 'MongoDB', iconUrl: '/tech-icons/mongodb-icon.svg', category: 'database' },
-    { name: 'PostgreSQL', iconUrl: '/tech-icons/postgresql.svg', category: 'database' },
-    { name: 'MySQL', iconUrl: '/tech-icons/mysql.svg', category: 'database' },
-    { name: 'Oracle', iconUrl: '/tech-icons/oracle.svg', category: 'database' },
+    { name: 'MongoDB', iconName: 'mongodb-icon', category: 'database' },
+    { name: 'PostgreSQL', iconName: 'postgresql', category: 'database' },
+    { name: 'MySQL', iconName: 'mysql', category: 'database' },
+    { name: 'Oracle', iconName: 'oracle', category: 'database' },
     
     // Cloud & DevOps
-    { name: 'AWS', iconUrl: '/tech-icons/aws.svg', category: 'cloud' },
-    { name: 'Microsoft Azure', iconUrl: '/tech-icons/microsoft-azure.svg', category: 'cloud' },
-    { name: 'Google Cloud', iconUrl: '/tech-icons/google-cloud.svg', category: 'cloud' },
-    { name: 'Docker', iconUrl: '/tech-icons/docker-icon.svg', category: 'cloud' },
-    { name: 'Kubernetes', iconUrl: '/tech-icons/kubernetes.svg', category: 'cloud' },
-    { name: 'Heroku', iconUrl: '/tech-icons/heroku-icon.svg', category: 'cloud' },
+    { name: 'AWS', iconName: 'aws', category: 'cloud' },
+    { name: 'Microsoft Azure', iconName: 'microsoft-azure', category: 'cloud' },
+    { name: 'Google Cloud', iconName: 'google-cloud', category: 'cloud' },
+    { name: 'Docker', iconName: 'docker-icon', category: 'cloud' },
+    { name: 'Kubernetes', iconName: 'kubernetes', category: 'cloud' },
+    { name: 'Heroku', iconName: 'heroku-icon', category: 'cloud' },
     
     // AI & Data Science
-    { name: 'TensorFlow', iconUrl: '/tech-icons/tensorflow.svg', category: 'ai' },
-    { name: 'PyTorch', iconUrl: '/tech-icons/pytorch-icon.svg', category: 'ai' },
-    { name: 'Scikit-learn', iconUrl: '/tech-icons/scikit-learn.svg', category: 'ai' },
-    { name: 'Matplotlib', iconUrl: '/tech-icons/matplotlib-icon.svg', category: 'ai' },
-    { name: 'Seaborn', iconUrl: '/tech-icons/seaborn-icon.svg', category: 'ai' },
-    { name: 'Jupyter', iconUrl: '/tech-icons/jupyter.svg', category: 'ai' },
-    { name: 'Hadoop', iconUrl: '/tech-icons/hadoop.svg', category: 'ai' },
+    { name: 'TensorFlow', iconName: 'tensorflow', category: 'ai' },
+    { name: 'PyTorch', iconName: 'pytorch-icon', category: 'ai' },
+    { name: 'Scikit-learn', iconName: 'scikit-learn', category: 'ai' },
+    { name: 'Matplotlib', iconName: 'matplotlib-icon', category: 'ai' },
+    { name: 'Seaborn', iconName: 'seaborn-icon', category: 'ai' },
+    { name: 'Jupyter', iconName: 'jupyter', category: 'ai' },
+    { name: 'Hadoop', iconName: 'hadoop', category: 'ai' },
     
     // Tools & Others
-    { name: 'GraphQL', iconUrl: '/tech-icons/graphql.svg', category: 'tools' },
-    { name: 'Kafka', iconUrl: '/tech-icons/kafka-icon.svg', category: 'tools' },
-    { name: 'Jira', iconUrl: '/tech-icons/jira.svg', category: 'tools' },
-    { name: 'WordPress', iconUrl: '/tech-icons/wordpress-icon.svg', category: 'tools' }
+    { name: 'GraphQL', iconName: 'graphql', category: 'tools' },
+    { name: 'Kafka', iconName: 'kafka-icon', category: 'tools' },
+    { name: 'Jira', iconName: 'jira', category: 'tools' },
+    { name: 'WordPress', iconName: 'wordpress-icon', category: 'tools' }
   ]
 
+  // Progressive loading: filter technologies based on visible count
+  const displayedTechnologies = allIconsLoaded ? technologies : technologies.slice(0, visibleIcons)
+  
   // Split technologies into two rows for better visual balance
-  const topRowTechs = technologies.slice(0, Math.ceil(technologies.length / 2))
-  const bottomRowTechs = technologies.slice(Math.ceil(technologies.length / 2))
+  const topRowTechs = displayedTechnologies.slice(0, Math.ceil(displayedTechnologies.length / 2))
+  const bottomRowTechs = displayedTechnologies.slice(Math.ceil(displayedTechnologies.length / 2))
+
+  // Load more icons when section comes into view
+  useEffect(() => {
+    if (visibleIcons < technologies.length) {
+      const timer = setTimeout(() => {
+        setVisibleIcons(prev => Math.min(prev + 6, technologies.length))
+        if (visibleIcons + 6 >= technologies.length) {
+          setAllIconsLoaded(true)
+        }
+      }, 500) // Delay between loading batches
+      
+      return () => clearTimeout(timer)
+    }
+  }, [visibleIcons, technologies.length])
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -141,10 +162,12 @@ const TechStack = () => {
       onMouseLeave={() => handleIconHover(false)}
     >
       <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-white rounded-xl sm:rounded-2xl shadow-md border border-gray-200 flex items-center justify-center p-2 sm:p-3">
-        <OptimizedImage 
-          src={tech.iconUrl} 
-          alt={tech.name} 
-          className="w-full h-full object-contain" 
+        <OptimizedTechIcon 
+          name={tech.iconName}
+          alt={tech.name}
+          size="medium"
+          className="w-full h-full"
+          loading="lazy"
         />
       </div>
     </div>
@@ -251,6 +274,8 @@ const TechStack = () => {
       </div>
     </div>
   )
-}
+})
+
+TechStack.displayName = 'TechStack'
 
 export default TechStack

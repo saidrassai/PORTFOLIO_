@@ -25,8 +25,13 @@ export default defineConfig({
         // Manual chunks for better caching
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          three: ['three', '@react-three/fiber', '@react-three/drei'],
+          'three-core': ['three'],
+          'three-fiber': ['@react-three/fiber'],
+          'three-drei': ['@react-three/drei'],
+          'three-rapier': ['@react-three/rapier'],
+          'three-postprocessing': ['@react-three/postprocessing'],
           ui: ['lucide-react', 'gsap'],
+          recaptcha: ['react-google-recaptcha'],
         },
         // Ensure proper file extensions
         entryFileNames: 'assets/[name]-[hash].js',

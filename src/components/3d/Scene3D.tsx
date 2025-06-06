@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { useRef, useReducer, useMemo, useState, useEffect } from 'react'
+import { useRef, useReducer, useMemo, useState, useEffect, memo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { useGLTF, MeshTransmissionMaterial, Environment, Lightformer } from '@react-three/drei'
 import { CuboidCollider, BallCollider, Physics, RigidBody } from '@react-three/rapier'
@@ -46,28 +46,150 @@ const shuffle = (accent = 0) => [
 function Scene(props: any) {
     const [accent, click] = useReducer((state) => ++state % accents.length, 0)
     const connectors = useMemo(() => shuffle(accent), [accent])
-    return (
-        <Canvas onClick={click} shadows dpr={[1, 1.5]} gl={{ antialias: false }} camera={{ position: [0, 0, 15], fov: 17.5, near: 1, far: 20 }} {...props}>
+    
+    // Advanced device-based performance scaling
+    const [deviceCapabilities, setDeviceCapabilities] = useState({
+        isMobile: false,
+        isLowEnd: false,
+        pixelRatio: 1,
+        antialias: true,
+        particleCount: 9,
+        shadowQuality: 'high' as 'high' | 'medium' | 'low' | 'off',
+        postProcessing: true,
+        maxConnectors: 9
+    })
+    
+    useEffect(() => {
+        // Track 3D scene initialization start time for analytics
+        const sceneStartTime = performance.now()
+        
+        // Enhanced device detection
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768
+        const isTablet = /iPad|Android/i.test(navigator.userAgent) && window.innerWidth >= 768 && window.innerWidth < 1024
+        const isLowEnd = navigator.hardwareConcurrency <= 4 || window.screen.width <= 1366
+        const memoryLimit = (navigator as any).deviceMemory || 4 // GB
+        const isLowMemory = memoryLimit < 4
+        
+        // Enhanced performance scaling
+        let pixelRatio = 1
+        let shadowQuality: 'high' | 'medium' | 'low' | 'off' = 'high'
+        let particleCount = 9
+        let postProcessing = true
+        let maxConnectors = 9
+        
+        if (isMobile) {
+            pixelRatio = Math.min(window.devicePixelRatio, 1.5)
+            shadowQuality = 'low'
+            particleCount = 6
+            postProcessing = false
+            maxConnectors = 6
+        } else if (isTablet || isLowEnd) {
+            pixelRatio = Math.min(window.devicePixelRatio, 1.75)
+            shadowQuality = 'medium'
+            particleCount = 7
+            postProcessing = true
+            maxConnectors = 7
+        } else if (isLowMemory) {
+            pixelRatio = Math.min(window.devicePixelRatio, 2)
+            shadowQuality = 'medium'
+            particleCount = 8
+            postProcessing = true
+            maxConnectors = 8
+        } else {
+            pixelRatio = Math.min(window.devicePixelRatio, 2.5)
+            shadowQuality = 'high'
+            particleCount = 9
+            postProcessing = true
+            maxConnectors = 9
+        }
+        
+        const antialias = !isMobile && !isLowEnd
+        
+        setDeviceCapabilities({
+            isMobile,
+            isLowEnd: isLowEnd || isLowMemory,
+            pixelRatio,
+            antialias,
+            particleCount,
+            shadowQuality,
+            postProcessing,
+            maxConnectors
+        })
+        
+        // Report 3D scene load time for analytics
+        if (typeof window !== 'undefined' && window.track3DSceneLoad) {
+            window.track3DSceneLoad(sceneStartTime)
+        }
+    }, [])
+    
+    // Limit connectors based on device capability
+    const limitedConnectors = useMemo(() => 
+        connectors.slice(0, deviceCapabilities.maxConnectors), 
+        [connectors, deviceCapabilities.maxConnectors]
+    )
+      return (
+        <Canvas 
+            onClick={click} 
+            shadows={deviceCapabilities.shadowQuality !== 'off'} 
+            dpr={[1, deviceCapabilities.pixelRatio]} 
+            gl={{ 
+                antialias: deviceCapabilities.antialias,
+                alpha: false,
+                powerPreference: deviceCapabilities.isMobile ? 'low-power' : 'high-performance',
+                logarithmicDepthBuffer: deviceCapabilities.isLowEnd,
+                precision: deviceCapabilities.isLowEnd ? 'mediump' : 'highp'
+            }} 
+            camera={{ position: [0, 0, 15], fov: 17.5, near: 1, far: 20 }} 
+            {...props}
+        >
             <color attach="background" args={['black']} />
             <ambientLight intensity={0.4} />
-            <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />            <Physics 
+            {deviceCapabilities.shadowQuality !== 'off' && (
+                <spotLight 
+                    position={[10, 10, 10]} 
+                    angle={0.15} 
+                    penumbra={1} 
+                    intensity={1} 
+                    castShadow={deviceCapabilities.shadowQuality !== 'low'}
+                    shadow-mapSize-width={deviceCapabilities.shadowQuality === 'high' ? 2048 : 1024}
+                    shadow-mapSize-height={deviceCapabilities.shadowQuality === 'high' ? 2048 : 1024}
+                />
+            )}
+            
+            <Physics 
                 gravity={[0, 0, 0]}
-                timeStep={1/60}
+                timeStep={deviceCapabilities.isLowEnd ? 1/30 : 1/60}
                 paused={false}
                 updatePriority={0}
-                interpolate={true}
+                interpolate={!deviceCapabilities.isLowEnd}
             >
                 <Pointer />
-                {connectors.map((props, i) => <Connector key={i} {...props} />)}
+                {limitedConnectors.map((props, i) => <Connector key={i} {...props} />)}
                 <Connector position={[10, 10, 5]}>
                     <Model>
-                        <MeshTransmissionMaterial clearcoat={1} thickness={0.1} anisotropicBlur={0.1} chromaticAberration={0.1} samples={8} resolution={512} />
+                        <MeshTransmissionMaterial 
+                            clearcoat={1} 
+                            thickness={0.1} 
+                            anisotropicBlur={deviceCapabilities.isLowEnd ? 0.05 : 0.1} 
+                            chromaticAberration={deviceCapabilities.isLowEnd ? 0.05 : 0.1} 
+                            samples={deviceCapabilities.isLowEnd ? 4 : 8} 
+                            resolution={deviceCapabilities.isLowEnd ? 256 : 512} 
+                        />
                     </Model>
                 </Connector>
-            </Physics><EffectComposer multisampling={8}>
-                <N8AO distanceFalloff={1} aoRadius={1} intensity={4} />
-            </EffectComposer>
-            <Environment resolution={256}>
+            </Physics>
+              {deviceCapabilities.postProcessing && (
+                <EffectComposer multisampling={deviceCapabilities.isLowEnd ? 0 : 8}>
+                    <N8AO 
+                        distanceFalloff={1} 
+                        aoRadius={1} 
+                        intensity={deviceCapabilities.isLowEnd ? 2 : 4}
+                        aoSamples={deviceCapabilities.isLowEnd ? 16 : 32}
+                    />
+                </EffectComposer>
+            )}
+            
+            <Environment resolution={deviceCapabilities.isLowEnd ? 128 : 256}>
                 <group rotation={[-Math.PI / 3, 0, 1]}>
                     <Lightformer form="circle" intensity={4} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={2} />
                     <Lightformer form="circle" intensity={2} rotation-y={Math.PI / 2} position={[-5, 1, -1]} scale={2} />
@@ -281,10 +403,12 @@ function Model({ children, color = 'white', roughness = 0 }: ModelProps) {
 }
 
 // Create Scene3D component with exported name
-const Scene3D = () => (
+const Scene3D = memo(() => (
     <div className="w-full h-full absolute inset-0 z-0 bg-gray-900">
         <Scene style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0}} />
     </div>
-)
+))
+
+Scene3D.displayName = 'Scene3D'
 
 export default Scene3D

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
-import { Download, Mouse } from 'lucide-react'
+import { Download, Mouse } from '../../utils/icons'
 import Scene3D from '../3d/Scene3D'
 
 const Hero = () => {

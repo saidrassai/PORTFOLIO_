@@ -1,0 +1,35 @@
+// Custom icon imports for tree-shaking optimization
+// This file imports only the specific icons we need
+
+export { 
+  Download,
+  Mouse,
+  Send,
+  Mail,
+  MapPin,
+  Phone,
+  Github,
+  Linkedin,
+  Shield,
+  Clock,
+  AlertTriangle,
+  CheckCircle,
+  Calendar,
+  Code,
+  GraduationCap,
+  Rocket,
+  Car,
+  Sun,
+  ExternalLink,
+  Globe,
+  Smartphone,
+  Database,
+  Palette,
+  Activity,
+  X,
+  Menu,
+  ArrowUp,
+  Monitor,
+  Zap,
+  MemoryStick
+} from 'lucide-react'

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { ExternalLink, Github, Code, Globe, Smartphone, Database, Palette, Activity, X } from 'lucide-react'
+import { useState, useEffect, memo } from 'react'
+import { ExternalLink, Github, Code, Globe, Smartphone, Database, Palette, Activity, X } from '../../utils/icons'
 import ParallaxBackground from '../ui/ParallaxBackground'
 import ParallaxContent from '../ui/ParallaxContent'
 import ParallaxFloatingElements from '../ui/ParallaxFloatingElements'
@@ -18,7 +18,7 @@ interface Project {
   image: string
 }
 
-const Projects = () => {
+const Projects = memo(() => {
   const projects: Project[] = [
     {
       id: 'proj_001',
@@ -554,8 +554,9 @@ const Projects = () => {
           </div>
         </div>
       )}
-    </div>
-  )
-}
+    </div>  )
+})
+
+Projects.displayName = 'Projects'
 
 export default Projects
