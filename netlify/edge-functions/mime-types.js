@@ -12,9 +12,14 @@ export default async (request, context) => {
     response.headers.set('Content-Type', 'application/javascript; charset=utf-8');
   }
   
+  // Set correct MIME type for CSS files
+  if (url.pathname.endsWith('.css') || url.pathname.includes('.css')) {
+    response.headers.set('Content-Type', 'text/css; charset=utf-8');
+  }
+  
   return response;
 };
 
 export const config = {
-  path: "/assets/*"
+  path: ["/assets/*", "/*.js", "/*.css", "/*.mjs"]
 };

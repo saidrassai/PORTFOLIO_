@@ -95,14 +95,18 @@ self.addEventListener('fetch', (event) => {
   if (!url.protocol.startsWith('http')) {
     return
   }
-  
-  // Skip data URLs and blob URLs (used by Vite dev server)
+    // Skip data URLs and blob URLs (used by Vite dev server)
   if (url.protocol === 'data:' || url.protocol === 'blob:') {
     return
   }
   
   // Skip Vite dev server HMR and module requests in development
   if (url.pathname.includes('/@') || url.pathname.includes('/.vite/') || url.pathname.includes('/__vite')) {
+    return
+  }
+  
+  // Skip ES module imports and dynamic imports
+  if (request.destination === 'script' && request.mode === 'cors') {
     return
   }
   
