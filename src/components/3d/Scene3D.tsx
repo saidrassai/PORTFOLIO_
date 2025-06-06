@@ -221,7 +221,7 @@ function Scene(props: any) {
     )
 }
 
-// Physics-enabled Connector component
+// Physics-enabled Connector component - TEST COMMIT to verify git push
 function PhysicsConnector({ position, children, vec = new THREE.Vector3(), scale, r = THREE.MathUtils.randFloatSpread, accent, deviceCapabilities, ...props }: ConnectorProps & { deviceCapabilities: any }) {
     const api = useRef<any>(null);
     const meshRef = useRef<THREE.Mesh>(null);
