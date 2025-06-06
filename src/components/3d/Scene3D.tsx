@@ -222,7 +222,7 @@ function Scene(props: any) {
 }
 
 // Physics-enabled Connector component - TEST COMMIT to verify git push
-function PhysicsConnector({ position, children, vec = new THREE.Vector3(), scale, r = THREE.MathUtils.randFloatSpread, accent, deviceCapabilities, ...props }: ConnectorProps & { deviceCapabilities: any }) {
+const PhysicsConnector = memo(({ position, children, vec = new THREE.Vector3(), scale, r = THREE.MathUtils.randFloatSpread, accent, deviceCapabilities, ...props }: ConnectorProps & { deviceCapabilities: any }) => {
     const api = useRef<any>(null);
     const meshRef = useRef<THREE.Mesh>(null);
     const tempVec = useMemo(() => new THREE.Vector3(), []);
@@ -328,10 +328,10 @@ function PhysicsConnector({ position, children, vec = new THREE.Vector3(), scale
             {accent && <pointLight intensity={4} distance={2.5} color={props.color} />}
         </ConditionalRigidBody>
     );
-}
+})
 
 // Static Connector component (no physics)
-function StaticConnector({ position, children, vec = new THREE.Vector3(), scale, r = THREE.MathUtils.randFloatSpread, accent, deviceCapabilities, ...props }: ConnectorProps & { deviceCapabilities: any }) {
+const StaticConnector = memo(({ position, children, vec = new THREE.Vector3(), scale, r = THREE.MathUtils.randFloatSpread, accent, deviceCapabilities, ...props }: ConnectorProps & { deviceCapabilities: any }) => {
     const meshRef = useRef<THREE.Mesh>(null);
     const pos = useMemo(() => position || [r(10), r(10), r(10)] as [number, number, number], [position, r]);
     
@@ -351,10 +351,10 @@ function StaticConnector({ position, children, vec = new THREE.Vector3(), scale,
             {accent && <pointLight intensity={4} distance={2.5} color={props.color} />}
         </group>
     );
-}
+})
 
 // Main Connector component that chooses implementation
-function Connector({ deviceCapabilities, ...props }: ConnectorProps & { deviceCapabilities: any }) {
+const Connector = memo(({ deviceCapabilities, ...props }: ConnectorProps & { deviceCapabilities: any }) => {
     const isPhysicsEnabled = !deviceCapabilities.isLowEnd && !deviceCapabilities.isMobile;
     
     if (isPhysicsEnabled) {
@@ -362,8 +362,8 @@ function Connector({ deviceCapabilities, ...props }: ConnectorProps & { deviceCa
     } else {
         return <StaticConnector deviceCapabilities={deviceCapabilities} {...props} />;
     }
-}// Physics-enabled Pointer component
-function PhysicsPointer({ vec = new THREE.Vector3() }: PointerProps) {
+})// Physics-enabled Pointer component
+const PhysicsPointer = memo(({ vec = new THREE.Vector3() }: PointerProps) => {
     const ref = useRef<any>(null);
     const prevPosition = useMemo(() => new THREE.Vector3(), []);
     const [velocity, setVelocity] = useState(0);
@@ -431,16 +431,16 @@ function PhysicsPointer({ vec = new THREE.Vector3() }: PointerProps) {
             />
         </ConditionalRigidBody>
     );
-}
+})
 
 // Static Pointer component (no physics, just visual)
-function StaticPointer() {
+const StaticPointer = memo(() => {
     // For static mode, we don't need any pointer interaction
     return null;
-}
+})
 
 // Main Pointer component that chooses implementation
-function Pointer({ deviceCapabilities, ...props }: PointerProps & { deviceCapabilities: any }) {
+const Pointer = memo(({ deviceCapabilities, ...props }: PointerProps & { deviceCapabilities: any }) => {
     const isPhysicsEnabled = !deviceCapabilities.isLowEnd && !deviceCapabilities.isMobile;
     
     if (isPhysicsEnabled) {
@@ -448,7 +448,7 @@ function Pointer({ deviceCapabilities, ...props }: PointerProps & { deviceCapabi
     } else {
         return <StaticPointer />;
     }
-}
+})
 
 // Create Scene3D component with exported name
 const Scene3D = memo(() => (
