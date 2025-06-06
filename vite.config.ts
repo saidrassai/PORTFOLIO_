@@ -5,8 +5,8 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   
-  // Base URL for assets
-  base: './',
+  // Base URL for assets - use absolute path for production
+  base: '/',
   
   // Production optimizations
   build: {
