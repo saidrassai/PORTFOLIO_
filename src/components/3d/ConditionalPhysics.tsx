@@ -25,9 +25,10 @@ const StaticContainer = memo(({ children }: { children: ReactNode }) => {
   )
 })
 
-export const ConditionalPhysics = memo<ConditionalPhysicsProps>(({
+// Physics wrapper component - only loaded when needed
+const PhysicsWrapper = memo<ConditionalPhysicsProps & { PhysicsComponent: React.ComponentType<any> }>(({
   children,
-  enablePhysics = false,
+  PhysicsComponent,
   deviceCapabilities,
   gravity = [0, 0, 0],
   timeStep,
@@ -35,64 +36,95 @@ export const ConditionalPhysics = memo<ConditionalPhysicsProps>(({
   updatePriority = 0,
   interpolate = true
 }) => {
-  const [shouldUsePhysics, setShouldUsePhysics] = useState(false)
-  const [PhysicsComponent, setPhysicsComponent] = useState<React.ComponentType<any> | null>(null)
+  const effectiveTimeStep = timeStep || (deviceCapabilities.isLowEnd ? 1/30 : 1/60)
+  const effectiveInterpolate = interpolate && !deviceCapabilities.isLowEnd
+  
+  return (
+    <PhysicsAvailableContext.Provider value={true}>
+      <PhysicsComponent
+        gravity={gravity}
+        timeStep={effectiveTimeStep}
+        paused={paused}
+        updatePriority={updatePriority}
+        interpolate={effectiveInterpolate}
+      >
+        {children}
+      </PhysicsComponent>
+    </PhysicsAvailableContext.Provider>
+  )
+})
+
+export const ConditionalPhysics = memo<ConditionalPhysicsProps>(({
+  children,
+  enablePhysics = false,
+  deviceCapabilities,
+  ...physicsProps
+}) => {
+  const [physicsState, setPhysicsState] = useState<{
+    shouldUse: boolean
+    component: React.ComponentType<any> | null
+    loading: boolean
+  }>({
+    shouldUse: false,
+    component: null,
+    loading: false
+  })
 
   useEffect(() => {
     // Determine if we should use physics based on device capabilities and user preference
-    const usePhysics = enablePhysics && 
-                      !deviceCapabilities.isLowEnd && 
-                      !deviceCapabilities.isMobile &&
-                      // Only use physics if user hasn't disabled animations
-                      !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const shouldUsePhysics = enablePhysics && 
+                            !deviceCapabilities.isLowEnd && 
+                            !deviceCapabilities.isMobile &&
+                            // Only use physics if user hasn't disabled animations
+                            !window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-    setShouldUsePhysics(usePhysics)
+    if (!shouldUsePhysics) {
+      setPhysicsState({ shouldUse: false, component: null, loading: false })
+      return
+    }
 
-    if (usePhysics) {
-      let mounted = true
+    // If we should use physics but haven't loaded it yet
+    if (shouldUsePhysics && !physicsState.component && !physicsState.loading) {
+      setPhysicsState(prev => ({ ...prev, loading: true }))
       
       const loadPhysics = async () => {
         try {
           // Dynamic import to avoid loading physics bundle unless needed
           const { Physics } = await import('@react-three/rapier')
-          if (mounted) {
-            setPhysicsComponent(() => Physics)
-          }
+          setPhysicsState({
+            shouldUse: true,
+            component: Physics,
+            loading: false
+          })
         } catch (error) {
           console.warn('Failed to load physics system, falling back to static mode:', error)
-          setShouldUsePhysics(false)
+          setPhysicsState({
+            shouldUse: false,
+            component: null,
+            loading: false
+          })
         }
       }
 
       loadPhysics()
-      
-      return () => {
-        mounted = false
-      }
     }
-  }, [enablePhysics, deviceCapabilities.isLowEnd, deviceCapabilities.isMobile])
+  }, [enablePhysics, deviceCapabilities.isLowEnd, deviceCapabilities.isMobile, physicsState.component, physicsState.loading])
 
-  // If physics is disabled or failed to load, use static container
-  if (!shouldUsePhysics || !PhysicsComponent) {
+  // If physics is disabled, loading, or failed to load, use static container
+  if (!physicsState.shouldUse || physicsState.loading || !physicsState.component) {
     return <StaticContainer>{children}</StaticContainer>
   }
 
-  // Use physics system with optimized settings
-  const effectiveTimeStep = timeStep || (deviceCapabilities.isLowEnd ? 1/30 : 1/60)
-  const effectiveInterpolate = interpolate && !deviceCapabilities.isLowEnd
+  // Use physics system
   return (
     <Suspense fallback={<StaticContainer>{children}</StaticContainer>}>
-      <PhysicsAvailableContext.Provider value={true}>
-        <PhysicsComponent
-          gravity={gravity}
-          timeStep={effectiveTimeStep}
-          paused={paused}
-          updatePriority={updatePriority}
-          interpolate={effectiveInterpolate}
-        >
-          {children}
-        </PhysicsComponent>
-      </PhysicsAvailableContext.Provider>
+      <PhysicsWrapper
+        PhysicsComponent={physicsState.component}
+        deviceCapabilities={deviceCapabilities}
+        {...physicsProps}
+      >
+        {children}
+      </PhysicsWrapper>
     </Suspense>
   )
 })
