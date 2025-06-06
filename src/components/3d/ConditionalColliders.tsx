@@ -1,4 +1,4 @@
-import React, { Suspense, useState, useEffect } from 'react'
+import { memo, useState, useEffect } from 'react'
 
 interface CuboidColliderProps {
   args: [number, number, number]
@@ -19,35 +19,40 @@ interface ConditionalColliderProps {
   children?: React.ReactNode
 }
 
-// Lazy load colliders
-const CuboidColliderLazy = React.lazy(() => 
-  import('@react-three/rapier').then(module => ({ default: module.CuboidCollider }))
-)
-
-const BallColliderLazy = React.lazy(() => 
-  import('@react-three/rapier').then(module => ({ default: module.BallCollider }))
-)
-
-export function ConditionalCuboidCollider({ 
+export const ConditionalCuboidCollider = memo<ConditionalColliderProps & CuboidColliderProps>(({ 
   enablePhysics, 
   ...props 
-}: ConditionalColliderProps & CuboidColliderProps) {
-  const [isLoaded, setIsLoaded] = useState(false)
+}) => {
+  const [CuboidColliderComponent, setCuboidColliderComponent] = useState<React.ComponentType<any> | null>(null)
 
   useEffect(() => {
-    if (enablePhysics) {
-      setIsLoaded(true)
+    if (enablePhysics && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      let mounted = true
+      
+      const loadCuboidCollider = async () => {
+        try {
+          const { CuboidCollider } = await import('@react-three/rapier')
+          if (mounted) {
+            setCuboidColliderComponent(() => CuboidCollider)
+          }
+        } catch (error) {
+          console.warn('Failed to load CuboidCollider:', error)
+        }
+      }
+
+      loadCuboidCollider()
+      
+      return () => {
+        mounted = false
+      }
     }
   }, [enablePhysics])
 
-  if (!enablePhysics || !isLoaded) {
+  if (!enablePhysics || !CuboidColliderComponent) {
     return null
   }
 
-  return (
-    <Suspense fallback={null}>
-      <CuboidColliderLazy {...props} />
-    </Suspense>
+  return <CuboidColliderComponent {...props} />
   )
 }
 
