@@ -1,5 +1,6 @@
 import { Suspense, useState, useEffect, memo } from 'react'
 import type { ReactNode } from 'react'
+import { PhysicsAvailableContext } from '../../hooks/usePhysics'
 
 interface ConditionalPhysicsProps {
   children: ReactNode
@@ -17,7 +18,11 @@ interface ConditionalPhysicsProps {
 
 // Static fallback component that just renders children without physics
 const StaticContainer = memo(({ children }: { children: ReactNode }) => {
-  return <>{children}</>
+  return (
+    <PhysicsAvailableContext.Provider value={false}>
+      {children}
+    </PhysicsAvailableContext.Provider>
+  )
 })
 
 export const ConditionalPhysics = memo<ConditionalPhysicsProps>(({
@@ -75,18 +80,19 @@ export const ConditionalPhysics = memo<ConditionalPhysicsProps>(({
   // Use physics system with optimized settings
   const effectiveTimeStep = timeStep || (deviceCapabilities.isLowEnd ? 1/30 : 1/60)
   const effectiveInterpolate = interpolate && !deviceCapabilities.isLowEnd
-
   return (
     <Suspense fallback={<StaticContainer>{children}</StaticContainer>}>
-      <PhysicsComponent
-        gravity={gravity}
-        timeStep={effectiveTimeStep}
-        paused={paused}
-        updatePriority={updatePriority}
-        interpolate={effectiveInterpolate}
-      >
-        {children}
-      </PhysicsComponent>
+      <PhysicsAvailableContext.Provider value={true}>
+        <PhysicsComponent
+          gravity={gravity}
+          timeStep={effectiveTimeStep}
+          paused={paused}
+          updatePriority={updatePriority}
+          interpolate={effectiveInterpolate}
+        >
+          {children}
+        </PhysicsComponent>
+      </PhysicsAvailableContext.Provider>
     </Suspense>
   )
 })
