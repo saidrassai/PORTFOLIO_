@@ -1,5 +1,5 @@
 // Enhanced Service Worker with advanced caching strategies
-const CACHE_VERSION = '1.2.0'
+const CACHE_VERSION = '1.3.0'
 const STATIC_CACHE_NAME = `portfolio-static-v${CACHE_VERSION}`
 const DYNAMIC_CACHE_NAME = `portfolio-dynamic-v${CACHE_VERSION}`
 const IMAGE_CACHE_NAME = `portfolio-images-v${CACHE_VERSION}`
@@ -95,6 +95,21 @@ self.addEventListener('fetch', (event) => {
   if (!url.protocol.startsWith('http')) {
     return
   }
+  
+  // Skip data URLs and blob URLs (used by Vite dev server)
+  if (url.protocol === 'data:' || url.protocol === 'blob:') {
+    return
+  }
+  
+  // Skip Vite dev server HMR and module requests in development
+  if (url.pathname.includes('/@') || url.pathname.includes('/.vite/') || url.pathname.includes('/__vite')) {
+    return
+  }
+  
+  // Skip service worker requests (prevent self-interception)
+  if (url.pathname.includes('sw.js')) {
+    return
+  }
 
   // Determine caching strategy based on resource type
   if (CACHE_PATTERNS.static.test(url.pathname)) {
@@ -135,17 +150,30 @@ async function cacheFirst(request, cacheName) {
         return cachedResponse
       }
     }
-    
-    // Fetch from network and update cache
+      // Fetch from network and update cache
     console.log('🌐 Fetching from network:', request.url)
     const networkResponse = await fetch(request)
     
     if (networkResponse.ok) {
       const responseToCache = networkResponse.clone()
       
-      // Add cache timestamp
+      // Add cache timestamp and ensure correct MIME types
       const headers = new Headers(responseToCache.headers)
       headers.set('sw-cache-date', new Date().toISOString())
+      
+      // Enforce correct MIME types based on file extension
+      const url = new URL(request.url)
+      const pathname = url.pathname.toLowerCase()
+      
+      if (pathname.endsWith('.css')) {
+        headers.set('Content-Type', 'text/css; charset=utf-8')
+      } else if (pathname.endsWith('.js') || pathname.endsWith('.mjs')) {
+        headers.set('Content-Type', 'application/javascript; charset=utf-8')
+      } else if (pathname.endsWith('.woff2')) {
+        headers.set('Content-Type', 'font/woff2')
+      } else if (pathname.endsWith('.woff')) {
+        headers.set('Content-Type', 'font/woff')
+      }
       
       const responseWithHeaders = new Response(responseToCache.body, {
         status: responseToCache.status,
@@ -178,14 +206,27 @@ async function networkFirst(request, cacheName) {
   try {
     console.log('🌐 Network First for:', request.url)
     const networkResponse = await fetch(request)
-    
-    if (networkResponse.ok) {
+      if (networkResponse.ok) {
       const cache = await caches.open(cacheName)
       const responseToCache = networkResponse.clone()
       
-      // Add cache timestamp
+      // Add cache timestamp and ensure correct MIME types
       const headers = new Headers(responseToCache.headers)
       headers.set('sw-cache-date', new Date().toISOString())
+      
+      // Enforce correct MIME types based on file extension
+      const url = new URL(request.url)
+      const pathname = url.pathname.toLowerCase()
+      
+      if (pathname.endsWith('.css')) {
+        headers.set('Content-Type', 'text/css; charset=utf-8')
+      } else if (pathname.endsWith('.js') || pathname.endsWith('.mjs')) {
+        headers.set('Content-Type', 'application/javascript; charset=utf-8')
+      } else if (pathname.endsWith('.woff2')) {
+        headers.set('Content-Type', 'font/woff2')
+      } else if (pathname.endsWith('.woff')) {
+        headers.set('Content-Type', 'font/woff')
+      }
       
       const responseWithHeaders = new Response(responseToCache.body, {
         status: responseToCache.status,
