@@ -2,14 +2,8 @@
 
 declare global {
   interface Window {
-    gtag?: (
-      command: 'config' | 'event' | 'js',
-      targetId: string | Date,
-      config?: {
-        [key: string]: any;
-      }
-    ) => void;
-    dataLayer?: any[];
+    // Analytics disabled - only keep essential types
+    track3DSceneLoad?: (startTime: number) => void;
   }
 }
 

@@ -36,20 +36,15 @@ class PerformanceErrorBoundary extends Component<Props, State> {
       error,
       errorInfo,
       performanceSnapshot
-    })
-
-    // Log detailed error with performance context
+    })    // Log detailed error with performance context
     this.logErrorWithPerformanceContext(error, errorInfo, performanceSnapshot)
-      // Send to analytics if available
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', 'exception', {
-        description: error.message,
-        fatal: false,
-        custom_map: {
-          component_stack: errorInfo.componentStack,
-          memory_usage: performanceSnapshot?.memory || 0,
-          page_load_time: (performanceSnapshot?.timing.loadEventEnd || 0) - (performanceSnapshot?.timing.fetchStart || 0),
-        }
+    
+    // Analytics disabled - error tracking simplified
+    if (import.meta.env.DEV) {
+      console.warn('Error boundary triggered:', {
+        message: error.message,
+        component_stack: errorInfo.componentStack,
+        performance: performanceSnapshot
       })
     }
   }

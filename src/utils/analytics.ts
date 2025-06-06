@@ -27,8 +27,7 @@ function getPerformanceRating(metric: string, value: number): 'good' | 'needs-im
 // Send metric to analytics service
 function sendToAnalytics(metric: Metric) {
   const rating = getPerformanceRating(metric.name, metric.value);
-  
-  // Console logging for development
+    // Analytics disabled - only console logging for development
   if (import.meta.env.DEV) {
     console.log(`🚀 ${metric.name}:`, {
       value: metric.value,
@@ -36,18 +35,6 @@ function sendToAnalytics(metric: Metric) {
       entries: metric.entries
     });
   }
-
-  // Google Analytics 4 (if available)
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', 'web_vitals', {
-      metric_name: metric.name,
-      metric_value: metric.value,
-      metric_rating: rating,
-      custom_map: {
-        metric_id: metric.id,
-        metric_delta: metric.delta,
-      }
-    });  }
   
   // Send to custom analytics endpoint (Netlify function)
   if (import.meta.env.PROD && typeof window !== 'undefined') {
@@ -82,17 +69,8 @@ function trackCustomMetrics() {
         for (const entry of list.getEntries()) {
           if (entry.entryType === 'navigation') {
             const navEntry = entry as PerformanceNavigationTiming;
-            const tti = navEntry.domInteractive;
-              // Create a custom metric object (TTI is not a standard Core Web Vital)
+            const tti = navEntry.domInteractive;            // Custom TTI tracking - analytics disabled
             console.log(`⏱️ TTI: ${tti}ms`);
-            
-            if (typeof window !== 'undefined' && window.gtag) {
-              window.gtag('event', 'custom_timing', {
-                name: 'time_to_interactive',
-                value: tti,
-                custom_parameter_1: 'TTI'
-              });
-            }
           }
         }
       });
@@ -107,35 +85,18 @@ function trackCustomMetrics() {
         for (const entry of list.getEntries()) {
           if (entry.name.includes('index') && entry.name.includes('.js')) {
             const resourceEntry = entry as PerformanceResourceTiming;
-            const loadTime = resourceEntry.responseEnd - resourceEntry.requestStart;
-            console.log(`📦 Bundle load time: ${loadTime}ms`);
-            
-            // Send custom metric
-            if (typeof window !== 'undefined' && window.gtag) {
-              window.gtag('event', 'bundle_performance', {
-                bundle_load_time: loadTime,
-                bundle_name: entry.name.split('/').pop(),
-              });
-            }
+            const loadTime = resourceEntry.responseEnd - resourceEntry.requestStart;            console.log(`📦 Bundle load time: ${loadTime}ms`);
           }
         }
       });
       observer.observe({ entryTypes: ['resource'] });
     }
   }
-
   // Track 3D scene initialization time
   if (typeof window !== 'undefined') {
     window.track3DSceneLoad = (startTime: number) => {
       const loadTime = performance.now() - startTime;
       console.log(`🎮 3D Scene load time: ${loadTime}ms`);
-      
-      if (window.gtag) {
-        window.gtag('event', '3d_performance', {
-          scene_load_time: loadTime,
-          rating: loadTime < 1000 ? 'good' : loadTime < 2000 ? 'needs-improvement' : 'poor'
-        });
-      }
     };
   }
 
@@ -146,30 +107,17 @@ function trackCustomMetrics() {
 // Error tracking with performance context
 function trackErrors() {
   if (typeof window === 'undefined') return;
-
   window.addEventListener('error', (event) => {
-    const perfData = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-    
-    if (window.gtag) {
-      window.gtag('event', 'exception', {
-        description: event.error?.message || 'Unknown error',
-        fatal: false,
-        // Include performance context
-        custom_map: {
-          dom_content_loaded: perfData?.domContentLoadedEventEnd || 0,
-          load_complete: perfData?.loadEventEnd || 0,
-        }
-      });
+    // Error tracking disabled - only console logging in dev
+    if (import.meta.env.DEV) {
+      console.warn('Error tracked:', event.error?.message || 'Unknown error');
     }
   });
 
   // Track unhandled promise rejections
   window.addEventListener('unhandledrejection', (event) => {
-    if (window.gtag) {
-      window.gtag('event', 'exception', {
-        description: `Unhandled Promise: ${event.reason}`,
-        fatal: false,
-      });
+    if (import.meta.env.DEV) {
+      console.warn('Unhandled Promise rejection:', event.reason);
     }
   });
 }
