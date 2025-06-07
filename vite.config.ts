@@ -5,8 +5,8 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   
-  // Base URL for assets
-  base: './',
+  // Base URL for assets - use different base for dev vs prod
+  base: process.env.NODE_ENV === 'production' ? './' : '/',
   
   // Production optimizations
   build: {
@@ -66,10 +66,8 @@ export default defineConfig({
   // Development server configuration
   server: {
     port: 5173,
-    strictPort: true,
-    // Add MIME type headers for development
-    headers: {
-      'Content-Type': 'application/javascript; charset=utf-8',
-    },
+    strictPort: false,
+    host: true,
+    // Remove MIME type headers that might be causing issues
   },
 })
