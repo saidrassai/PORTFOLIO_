@@ -1,15 +1,23 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense, lazy } from 'react'
 import Hero from './components/sections/Hero'
-import About from './components/sections/About'
-import TechStack from './components/sections/TechStack'
-import Projects from './components/sections/Projects'
-import Contact from './components/sections/Contact'
 import Navigation from './components/ui/Navigation'
 import PageLoader from './components/ui/PageLoader'
 import ScrollToTop from './components/ui/ScrollToTop'
 import ScrollProgress from './components/ui/ScrollProgress'
 import { initSmoothScrolling } from './utils/smoothScroll'
 
+// Lazy load heavy components
+const About = lazy(() => import('./components/sections/About'))
+const TechStack = lazy(() => import('./components/sections/TechStack'))
+const Projects = lazy(() => import('./components/sections/Projects'))
+const Contact = lazy(() => import('./components/sections/Contact'))
+
+// Loading fallback component
+const SectionLoader = ({ height = "min-h-[400px]" }: { height?: string }) => (
+  <div className={`${height} flex items-center justify-center bg-gray-50`}>
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+  </div>
+)
 
 
 function App() {
@@ -41,23 +49,31 @@ function App() {
         
         {/* Main Content */}
         <main className="relative bg-white">
-        {/* Hero Section */}
+        {/* Hero Section - Loads immediately */}
         <section id="hero">
           <Hero />
         </section>
 
-        {/* Other Sections */}
+        {/* Lazy loaded sections */}
         <section id="about">
-          <About />
+          <Suspense fallback={<SectionLoader />}>
+            <About />
+          </Suspense>
         </section>
         <section id="techstack">
-          <TechStack />
+          <Suspense fallback={<SectionLoader height="min-h-[600px]" />}>
+            <TechStack />
+          </Suspense>
         </section>
         <section id="projects">
-          <Projects />
+          <Suspense fallback={<SectionLoader height="min-h-[800px]" />}>
+            <Projects />
+          </Suspense>
         </section>
         <section id="contact">
-          <Contact />
+          <Suspense fallback={<SectionLoader />}>
+            <Contact />
+          </Suspense>
         </section>
         
         {/* Footer */}

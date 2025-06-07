@@ -22,11 +22,26 @@ export default defineConfig({
     // Rollup options for optimization
     rollupOptions: {
       output: {
-        // Manual chunks for better caching
+        // Optimized manual chunks for better caching
         manualChunks: {
-          vendor: ['react', 'react-dom'],
-          three: ['three', '@react-three/fiber', '@react-three/drei'],
-          ui: ['lucide-react', 'gsap'],
+          // Core React
+          'react-vendor': ['react', 'react-dom'],
+          
+          // 3D Libraries (Lazy loaded)
+          'three-core': ['three'],
+          'three-fiber': ['@react-three/fiber'],
+          'three-drei': ['@react-three/drei'],
+          'three-rapier': ['@react-three/rapier'],
+          'three-postprocessing': ['@react-three/postprocessing'],
+          
+          // Animations
+          'animation-libs': ['gsap'],
+          
+          // UI Libraries  
+          'ui-libs': ['lucide-react'],
+          
+          // Utils
+          'utils': ['web-vitals', 'maath']
         },
         // Ensure proper file extensions
         entryFileNames: 'assets/[name]-[hash].js',
