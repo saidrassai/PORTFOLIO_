@@ -2,11 +2,11 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
   
   // Base URL for assets - use different base for dev vs prod
-  base: process.env.NODE_ENV === 'production' ? './' : '/',
+  base: mode === 'production' ? './' : '/',
   
   // Production optimizations
   build: {
@@ -85,4 +85,4 @@ export default defineConfig({
     host: true,
     // Remove MIME type headers that might be causing issues
   },
-})
+}))
