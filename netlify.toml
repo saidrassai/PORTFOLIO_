@@ -6,94 +6,77 @@
   NODE_VERSION = "20"
   NPM_VERSION = "10"
 
-# Edge function for MIME type handling
-[[edge_functions]]
-  function = "mime-types"
-  path = "/assets/*"
-
+# SPA redirect
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-[dev]
-  command = "npm run dev"
-  port = 5173
+# CRITICAL: Fix MIME types for JavaScript modules - Must use text/javascript for modules
+[[headers]]
+  for = "/assets/*.js"
+  [headers.values]
+    Content-Type = "text/javascript; charset=utf-8"
+    Cache-Control = "public, max-age=31536000, immutable"
 
-# MIME type headers for JavaScript modules
+[[headers]]
+  for = "/assets/*.mjs"
+  [headers.values]
+    Content-Type = "text/javascript; charset=utf-8"
+    Cache-Control = "public, max-age=31536000, immutable"
+
 [[headers]]
   for = "*.js"
   [headers.values]
-    Content-Type = "application/javascript; charset=utf-8"
+    Content-Type = "text/javascript; charset=utf-8"
 
 [[headers]]
   for = "*.mjs"
   [headers.values]
-    Content-Type = "application/javascript; charset=utf-8"
+    Content-Type = "text/javascript; charset=utf-8"
 
 [[headers]]
   for = "*.jsx"
   [headers.values]
-    Content-Type = "application/javascript; charset=utf-8"
+    Content-Type = "text/javascript; charset=utf-8"
+
+# Additional JS file patterns
+[[headers]]
+  for = "*.ts"
+  [headers.values]
+    Content-Type = "text/javascript; charset=utf-8"
 
 [[headers]]
-  for = "/assets/*.js"
+  for = "*.tsx"
   [headers.values]
-    Content-Type = "application/javascript; charset=utf-8"
+    Content-Type = "text/javascript; charset=utf-8"
+
+# CSS files
+[[headers]]
+  for = "/assets/*.css"
+  [headers.values]
+    Content-Type = "text/css; charset=utf-8"
     Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
-  for = "/assets/*-*.js"
+  for = "*.css"
   [headers.values]
-    Content-Type = "application/javascript; charset=utf-8"
-    Cache-Control = "public, max-age=31536000, immutable"
+    Content-Type = "text/css; charset=utf-8"
 
-# Specific patterns for common Vite build outputs
+# Font files
 [[headers]]
-  for = "/assets/index-*.js"
+  for = "*.woff2"
   [headers.values]
-    Content-Type = "application/javascript; charset=utf-8"
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "/assets/vendor-*.js"
-  [headers.values]
-    Content-Type = "application/javascript; charset=utf-8"
+    Content-Type = "font/woff2"
     Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
-  for = "/assets/three-*.js"
+  for = "*.woff"
   [headers.values]
-    Content-Type = "application/javascript; charset=utf-8"
+    Content-Type = "font/woff"
     Cache-Control = "public, max-age=31536000, immutable"
 
-[[headers]]
-  for = "/assets/ui-*.js"
-  [headers.values]
-    Content-Type = "application/javascript; charset=utf-8"
-    Cache-Control = "public, max-age=31536000, immutable"
-
-# Security headers
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://www.google.com https://www.gstatic.com https://recaptcha.net https://google.com https://gstatic.com https://googletagmanager.com blob: data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.gstatic.com https://tagmanager.google.com; img-src 'self' data: https: blob: https://www.google-analytics.com https://ssl.google-analytics.com https://www.googletagmanager.com; font-src 'self' data: https://fonts.gstatic.com https://fonts.googleapis.com; connect-src 'self' https://www.google.com https://www.gstatic.com https://recaptcha.net https://fonts.googleapis.com https://fonts.gstatic.com https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://region1.analytics.google.com blob: data:; frame-src https://www.google.com https://recaptcha.net https://google.com; object-src 'none'; base-uri 'self'; form-action 'self' https://www.google.com; worker-src 'self' blob: data:; child-src 'self' blob:; media-src 'self' blob: data:;"
-
-# Cache optimization
-[[headers]]
-  for = "/assets/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "/*.css"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
+# Model files
 [[headers]]
   for = "/models/*"
   [headers.values]
@@ -103,3 +86,49 @@
   for = "/tech-icons/*"
   [headers.values]
     Cache-Control = "public, max-age=2592000"
+
+# Security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# HTML files
+[[headers]]
+  for = "*.html"
+  [headers.values]
+    Content-Type = "text/html; charset=utf-8"
+
+# JSON files
+[[headers]]
+  for = "*.json"
+  [headers.values]
+    Content-Type = "application/json; charset=utf-8"
+
+# SVG files
+[[headers]]
+  for = "*.svg"
+  [headers.values]
+    Content-Type = "image/svg+xml; charset=utf-8"
+
+# GLB/GLTF model files
+[[headers]]
+  for = "*.glb"
+  [headers.values]
+    Content-Type = "model/gltf-binary"
+    Cache-Control = "public, max-age=2592000"
+
+[[headers]]
+  for = "*.gltf"
+  [headers.values]
+    Content-Type = "model/gltf+json"
+    Cache-Control = "public, max-age=2592000"
+
+[context.production]
+  command = "npm run build"
+
+[context.deploy-preview]
+  command = "npm run build"

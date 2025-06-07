@@ -6,7 +6,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [react()],
   
   // Base URL for assets - use different base for dev vs prod
-  base: mode === 'production' ? './' : '/',
+  base: mode === 'production' ? '/' : '/',
   
   // Production optimizations
   build: {
