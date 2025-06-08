@@ -1,0 +1,80 @@
+{  "ci": {
+    "collect": {
+      "url": [
+        "https://rassaisaid.me/",
+        "https://rassaisaid.me/#about",
+        "https://rassaisaid.me/#projects",
+        "https://rassaisaid.me/#contact"
+      ],
+      "startServerCommand": "",
+      "numberOfRuns": 3,
+      "settings": {
+        "preset": "desktop",
+        "chromeFlags": "--no-sandbox --disable-dev-shm-usage",
+        "emulatedFormFactor": "desktop",
+        "throttling": {
+          "rttMs": 40,
+          "throughputKbps": 10240,
+          "cpuSlowdownMultiplier": 1,
+          "requestLatencyMs": 0,
+          "downloadThroughputKbps": 0,
+          "uploadThroughputKbps": 0
+        },
+        "screenEmulation": {
+          "mobile": false,
+          "width": 1920,
+          "height": 1080,
+          "deviceScaleFactor": 1,
+          "disabled": false
+        }
+      }
+    },    "assert": {
+      "assertions": {
+        "categories:performance": ["warn", {"minScore": 0.50}],
+        "categories:accessibility": ["warn", {"minScore": 0.90}],
+        "categories:best-practices": ["warn", {"minScore": 0.85}],
+        "categories:seo": ["warn", {"minScore": 0.90}]
+      }
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  },  "mobile": {
+    "collect": {
+      "url": [
+        "https://rassaisaid.me/",
+        "https://rassaisaid.me/#about",
+        "https://rassaisaid.me/#projects",
+        "https://rassaisaid.me/#contact"
+      ],
+      "numberOfRuns": 3,
+      "settings": {
+        "preset": "mobile",
+        "chromeFlags": "--no-sandbox --disable-dev-shm-usage",
+        "emulatedFormFactor": "mobile",
+        "throttling": {
+          "rttMs": 150,
+          "throughputKbps": 1600,
+          "cpuSlowdownMultiplier": 4,
+          "requestLatencyMs": 0,
+          "downloadThroughputKbps": 0,
+          "uploadThroughputKbps": 0
+        },
+        "screenEmulation": {
+          "mobile": true,
+          "width": 375,
+          "height": 667,
+          "deviceScaleFactor": 2,
+          "disabled": false
+        }
+      }
+    },    "assert": {
+      "assertions": {
+        "categories:performance": ["warn", {"minScore": 0.55}],
+        "categories:accessibility": ["warn", {"minScore": 0.90}],
+        "categories:best-practices": ["warn", {"minScore": 0.85}],
+        "categories:seo": ["warn", {"minScore": 0.90}]
+      }
+    }
+  }
+}

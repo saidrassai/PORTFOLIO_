@@ -14,7 +14,7 @@ const validateEmail = (email: string): boolean => {
 
 const validateName = (name: string): boolean => {
   // Only allow letters, spaces, hyphens, apostrophes, and some international characters
-  const nameRegex = /^[a-zA-ZÀ-ÿ\s\-'\.]+$/
+  const nameRegex = /^[a-zA-ZÀ-ÿ\s\-'.]+$/
   return nameRegex.test(name) && name.length >= 2 && name.length <= 50
 }
 
@@ -258,8 +258,7 @@ const Contact = () => {
         isSubmitting: false,
         isSuccess: true,
         message: 'Thank you! Your message has been sent successfully. I\'ll get back to you soon.'
-      })
-        } catch (error) {
+      })        } catch {
       // Reset reCAPTCHA on error
       setRecaptchaToken(null)
       if (recaptchaRef.current) {

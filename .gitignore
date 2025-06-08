@@ -86,3 +86,4 @@ backup_*/
 src/scene.txt
 src/components/sections/Portfolio_*.txt
 src/components/sections/Portfolio.txt
+.lighthouseci/

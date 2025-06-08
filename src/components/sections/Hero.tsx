@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { Download, Mouse } from 'lucide-react'
-import Scene3D from '../3d/Scene3D'
+import VideoHero from '../hero/VideoHero'
 
 const Hero = () => {
   const titleRef = useRef<HTMLHeadingElement>(null)
@@ -21,20 +21,22 @@ const Hero = () => {
       { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
       "-=0.3"
     )
-    .fromTo(ctaRef.current,
-      { opacity: 0, y: 20 },
+    .fromTo(ctaRef.current,      { opacity: 0, y: 20 },
       { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
       "-=0.2"
     )
   }, [])
-
   return (
-    <section id="home" className="min-h-screen relative overflow-hidden" data-theme="dark">
-      {/* 3D Scene Background */}
-      <Scene3D />
-        {/* Content */}      
-      <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 z-1">
-        <div className="max-w-4xl mx-auto text-center backdrop-blur-sm bg-black/10 p-4 sm:p-6 md:p-8 rounded-xl shadow-xl">          <h1 
+    <section id="home" className="min-h-screen relative overflow-hidden bg-slate-900" data-theme="dark">{/* Video Background */}
+      <VideoHero 
+        introVideoSrc="/video/home.webm"
+        loopVideoSrc="/video/home_loop.webm"
+        className="z-0"
+      />
+      
+      {/* Content */}
+      <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 relative z-10">
+        <div className="max-w-4xl mx-auto text-center backdrop-blur-sm bg-black/20 p-4 sm:p-6 md:p-8 rounded-xl shadow-xl border border-white/10"><h1 
             ref={titleRef}
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-4 sm:mb-6 tracking-tight text-white drop-shadow-xl"
           >

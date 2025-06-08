@@ -19,14 +19,13 @@ interface Project {
 }
 
 const Projects = () => {
-  const projects: Project[] = [
-    {
+  const projects: Project[] = [    {
       id: 'proj_001',
-      title: 'Interactive 3D Portfolio',
-      description: 'A modern portfolio featuring React Three Fiber, GSAP animations, and responsive design. Built with performance and accessibility in mind, showcasing cutting-edge web technologies.',
+      title: 'Modern Video Portfolio',
+      description: 'A modern portfolio featuring video backgrounds, GSAP animations, and responsive design. Built with performance and accessibility in mind, showcasing cutting-edge web technologies.',
       github: 'https://github.com/saidrassai/portfolio',
       visit: 'https://rassaisaid.me',
-      tech: ['React', 'Three.js', 'TypeScript', 'GSAP', 'Tailwind CSS'],
+      tech: ['React', 'TypeScript', 'GSAP', 'Tailwind CSS', 'Vite'],
       status: 'live',
       version: 'v3.2.0',
       category: 'web',

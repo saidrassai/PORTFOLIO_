@@ -27,13 +27,6 @@ export default defineConfig(({ mode }) => ({
           // Core React
           'react-vendor': ['react', 'react-dom'],
           
-          // 3D Libraries (Lazy loaded)
-          'three-core': ['three'],
-          'three-fiber': ['@react-three/fiber'],
-          'three-drei': ['@react-three/drei'],
-          'three-rapier': ['@react-three/rapier'],
-          'three-postprocessing': ['@react-three/postprocessing'],
-          
           // Animations
           'animation-libs': ['gsap'],
           
@@ -41,7 +34,7 @@ export default defineConfig(({ mode }) => ({
           'ui-libs': ['lucide-react'],
           
           // Utils
-          'utils': ['web-vitals', 'maath']
+          'utils': ['web-vitals']
         },
         // Ensure proper file extensions
         entryFileNames: 'assets/[name]-[hash].js',
