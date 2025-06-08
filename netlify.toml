@@ -131,3 +131,18 @@
 
 [context.deploy-preview]
   command = "npm run build"
+
+# Forms configuration
+[forms]
+  # Set to false to disable forms by default, or true to enable
+  # This controls whether forms are processed at all
+  enable = true
+
+# Form-specific configuration
+[[form]]
+  name = "contact"
+  action = "/thank-you"
+  # Enable spam filtering
+  spam-filter = true
+  # Enable notification emails
+  notification_emails = ["rassai.said@ensi.ma"]
