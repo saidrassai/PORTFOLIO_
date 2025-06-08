@@ -21,9 +21,7 @@ const Hero = () => {
       { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
       "-=0.3"
     )
-    .fromTo(ctaRef.current,      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
-      "-=0.2"
+    .fromTo(ctaRef.current,      { opacity: 0, y: 20 },      { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },      "-=0.2"
     )
   }, [])
   return (
@@ -32,17 +30,15 @@ const Hero = () => {
         introVideoSrc="/video/home.webm"
         loopVideoSrc="/video/home_loop.webm"
         className="z-0"
-      />
-      
-      {/* Content */}
+      />      {/* Content */}
       <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 relative z-10">
-        <div className="max-w-4xl mx-auto text-center backdrop-blur-sm bg-black/20 p-4 sm:p-6 md:p-8 rounded-xl shadow-xl border border-white/10"><h1 
+        <div className="max-w-4xl mx-auto text-center backdrop-blur-sm bg-black/20 p-4 sm:p-6 md:p-8 rounded-xl shadow-xl border border-white/10">
+        <h1
             ref={titleRef}
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-4 sm:mb-6 tracking-tight text-white drop-shadow-xl"
           >
-            <span className=" font-bold"style={{ color: '#EEEEEE' }}>WHERE IDEAS</span>
-            <span className="text-white font-bold mx-2"> </span>
-            <span className="font-bold px-1 rounded" style={{ color: '#333446', backgroundColor: '#FFEB3B', paddingTop: '1px', paddingBottom: '1px' }}>BECOMES REALITY</span>
+            <span className="font-bold block" style={{ color: '#EEEEEE' }}>WHERE IDEAS</span>
+            <span className="font-bold block px-1 rounded mt-1" style={{ color: '#333446', backgroundColor: '#FFEB3B', paddingTop: '1px', paddingBottom: '1px' }}>BECOMES REALITY</span>
           </h1>
           
           <p 
@@ -50,7 +46,8 @@ const Hero = () => {
             className="text-base sm:text-lg md:text-xl text-gray-200 mb-8 sm:mb-12 max-w-2xl mx-auto leading-relaxed drop-shadow-lg px-2 sm:px-0"
           >
             Building solutions for tomorrow through modern technologies, clean design, critical thinking & a creative spirit.
-          </p>            <div ref={ctaRef} className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
+          </p>            
+          <div ref={ctaRef} className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
             <a 
               href="#projects"
               className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-white/90 backdrop-blur-sm text-gray-900 rounded-full hover:bg-white transition-all duration-300 font-medium shadow-lg text-center"

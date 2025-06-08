@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Menu, X, Github, Linkedin, Mail } from 'lucide-react'
 import { gsap } from 'gsap'
 
-const Navigation = () => {
+const Navigation = ({ hasAnnouncementBar = true }: { hasAnnouncementBar?: boolean }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrollY, setScrollY] = useState(0)
   const [activeSection, setActiveSection] = useState('home')
@@ -15,11 +15,12 @@ const Navigation = () => {
       setScrollY(window.scrollY);      // Update active section based on scroll position
       const sections = ['home', 'about', 'techstack', 'projects', 'contact']
       let foundSection = null;
+      const sectionOffset = hasAnnouncementBar ? 160 : 100 // Adjust for announcement bar
       for (const section of sections) {
         const element = document.getElementById(section);
         if (element) {
           const rect = element.getBoundingClientRect();
-          if (rect.top <= 100 && rect.bottom >= 100) {
+          if (rect.top <= sectionOffset && rect.bottom >= sectionOffset) {
             foundSection = section;
             break;
           }
@@ -57,14 +58,15 @@ const Navigation = () => {
     { label: 'Tech Stack', href: '#techstack' },
     { label: 'Projects', href: '#projects' },
     { label: 'Contact', href: '#contact' },
-  ]
-
-  // Calculate opacity: more transparent at top, more solid as you scroll down (max at 120px)
+  ]  // Calculate opacity: more transparent at top, more solid as you scroll down (max at 120px)
+  // Adjust scroll thresholds when announcement bar is present
+  const announcementBarHeight = hasAnnouncementBar ? 60 : 0 // More accurate height: py-3 (24px) + content (~32px) + progress bar (4px)
   const minOpacity = 0.2;
   const maxOpacity = sectionTheme === 'dark' ? 0.7 : 0.8;
   const scrollMax = 120;
-  const opacity = scrollY < 10 ? minOpacity : Math.min(maxOpacity, minOpacity + ((maxOpacity - minOpacity) * Math.min(scrollY, scrollMax) / scrollMax));
-  const navBg = scrollY < 5
+  const adjustedScrollY = Math.max(0, scrollY - announcementBarHeight)
+  const opacity = adjustedScrollY < 10 ? minOpacity : Math.min(maxOpacity, minOpacity + ((maxOpacity - minOpacity) * Math.min(adjustedScrollY, scrollMax) / scrollMax));
+  const navBg = adjustedScrollY < 5
     ? 'bg-transparent'
     : sectionTheme === 'dark'
       ? ''
@@ -72,10 +74,9 @@ const Navigation = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 backdrop-blur-md shadow-sm ${navBg}`}
-      style={{
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 backdrop-blur-md shadow-sm ${navBg}`}      style={{
         backgroundColor:
-          scrollY < 5
+          adjustedScrollY < 5
             ? 'transparent'
             : sectionTheme === 'dark'
               ? `rgba(17,17,17,${opacity})` // Tailwind's neutral-900

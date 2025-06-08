@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { ExternalLink, Github, Code, Globe, Smartphone, Database, Palette, Activity, X } from 'lucide-react'
+import { ExternalLink, Github, Code, Globe, Smartphone, Database, Palette, Activity, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import ParallaxBackground from '../ui/ParallaxBackground'
 import ParallaxContent from '../ui/ParallaxContent'
 import ParallaxFloatingElements from '../ui/ParallaxFloatingElements'
@@ -16,20 +16,26 @@ interface Project {
   version: string
   category: 'web' | 'mobile' | 'fullstack' | 'design' | 'ai'
   image: string
+  gallery: string[]
 }
 
 const Projects = () => {
   const projects: Project[] = [    {
       id: 'proj_001',
-      title: 'Modern Video Portfolio',
-      description: 'A modern portfolio featuring video backgrounds, GSAP animations, and responsive design. Built with performance and accessibility in mind, showcasing cutting-edge web technologies.',
+      title: 'Modern Portfolio',
+      description: 'An immersive digital experience that redefines personal branding through seamless animations, progressive web app capabilities, and pixel-perfect responsive design. Crafted with performance optimization and accessibility at its core, delivering a fluid journey through cutting-edge web technologies.',
       github: 'https://github.com/saidrassai/portfolio',
       visit: 'https://rassaisaid.me',
-      tech: ['React', 'TypeScript', 'GSAP', 'Tailwind CSS', 'Vite'],
+      tech: ['React', 'TypeScript', 'GSAP', 'Tailwind CSS', 'Vite','PWA','CI/CD'],
       status: 'live',
       version: 'v3.2.0',
       category: 'web',
-      image: '/Project_Photos/portolio.png'
+      image: '/Project_Photos/portolio.png',
+      gallery: [
+        '/portfolio_photo/pf_1.png',
+        '/portfolio_photo/pf_2.png',
+        '/portfolio_photo/pf_3.png',
+      ]
     },
     {
       id: 'proj_002',
@@ -41,9 +47,13 @@ const Projects = () => {
       status: 'completed',
       version: 'v2.1.5',
       category: 'fullstack',
-      image: '/Project_Photos/portolio.png'
-    },
-    {
+      image: '/Project_Photos/portolio.png',
+      gallery: [
+        '/Project_Photos/portolio.png',
+        '/projects/placeholder1.jpg',
+        '/Project_Photos/portolio.png'
+      ]
+    },    {
       id: 'proj_003',
       title: 'Mobile Task Manager',
       description: 'Cross-platform mobile app for task management with offline sync, push notifications, and collaborative features. Designed for productivity and team coordination.',
@@ -53,7 +63,14 @@ const Projects = () => {
       status: 'development',
       version: 'v1.8.3',
       category: 'mobile',
-      image: '/Project_Photos/portolio.png'
+      image: '/Project_Photos/portolio.png',
+      gallery: [
+        '/Project_Photos/portolio.png',
+        '/projects/placeholder1.jpg',
+        '/Project_Photos/portolio.png',
+        '/projects/placeholder1.jpg',
+        '/Project_Photos/portolio.png'
+      ]
     },
     {
       id: 'proj_004',
@@ -65,7 +82,12 @@ const Projects = () => {
       status: 'live',
       version: 'v4.0.1',
       category: 'design',
-      image: '/Project_Photos/portolio.png'
+      image: '/Project_Photos/portolio.png',
+      gallery: [
+        '/Project_Photos/portolio.png',
+        '/projects/placeholder1.jpg',
+        '/Project_Photos/portolio.png'
+      ]
     },
     {
       id: 'proj_005',
@@ -77,7 +99,13 @@ const Projects = () => {
       status: 'live',
       version: 'v3.5.2',
       category: 'ai',
-      image: '/Project_Photos/portolio.png'
+      image: '/Project_Photos/portolio.png',
+      gallery: [
+        '/Project_Photos/portolio.png',
+        '/projects/placeholder1.jpg',
+        '/Project_Photos/portolio.png',
+        '/projects/placeholder1.jpg'
+      ]
     },
     {
       id: 'proj_006',
@@ -89,15 +117,21 @@ const Projects = () => {
       status: 'development',
       version: 'v0.9.1',
       category: 'web',
-      image: '/Project_Photos/portolio.png'
+      image: '/Project_Photos/portolio.png',
+      gallery: [
+        '/Project_Photos/portolio.png',
+        '/projects/placeholder1.jpg',
+        '/Project_Photos/portolio.png'
+      ]
     }
   ]
-    const [currentIndex, setCurrentIndex] = useState(0)
+  const [currentIndex, setCurrentIndex] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
   const [projectInfo, setProjectInfo] = useState({ title: projects[0].title, id: projects[0].id })
   const [infoOpacity, setInfoOpacity] = useState(1)
   const [showDescription, setShowDescription] = useState(false)
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0)
   
   const updateCarousel = (newIndex: number) => {
     if (isAnimating) return
@@ -137,11 +171,23 @@ const Projects = () => {
       updateCarousel(index)
     }
   }
-    const closeDescription = () => {
+  const closeDescription = () => {
     setShowDescription(false)
     setSelectedProject(null)
+    setCurrentGalleryIndex(0) // Reset gallery to first image
     // Restore page scroll when modal closes
     document.body.style.overflow = 'unset'
+  }
+
+  const navigateGallery = (direction: 'prev' | 'next') => {
+    if (!selectedProject) return
+    
+    const galleryLength = selectedProject.gallery.length
+    if (direction === 'next') {
+      setCurrentGalleryIndex((prev) => (prev + 1) % galleryLength)
+    } else {
+      setCurrentGalleryIndex((prev) => (prev - 1 + galleryLength) % galleryLength)
+    }
   }
   
   const getCardPosition = (index: number): string => {
@@ -486,14 +532,63 @@ const Projects = () => {
                 <X size={20} className="text-yellow-600 hover:text-yellow-700" />
               </button>
             </div>
-            
-            {/* Modal Content */}
-            <div className="p-6">
-              <img
-                src={selectedProject.image}
-                alt={selectedProject.title}
-                className="w-full h-48 sm:h-56 object-cover rounded-xl mb-6 shadow-lg"
-              />
+              {/* Modal Content */}
+            <div className="p-6">              {/* Project Gallery */}
+              <div className="relative mb-6">
+                <div className="w-full min-h-64 max-h-96 flex items-center justify-center bg-gray-50 rounded-xl shadow-lg overflow-hidden">
+                  <img
+                    src={selectedProject.gallery[currentGalleryIndex]}
+                    alt={`${selectedProject.title} - Image ${currentGalleryIndex + 1}`}
+                    className="max-w-full max-h-full object-contain transition-opacity duration-300"
+                  />
+                </div>
+                
+                {/* Gallery Navigation */}
+                {selectedProject.gallery.length > 1 && (
+                  <>
+                    {/* Previous Button */}
+                    <button
+                      onClick={() => navigateGallery('prev')}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200"
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft size={20} />
+                    </button>
+                    
+                    {/* Next Button */}
+                    <button
+                      onClick={() => navigateGallery('next')}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200"
+                      aria-label="Next image"
+                    >
+                      <ChevronRight size={20} />
+                    </button>
+                    
+                    {/* Gallery Dots */}
+                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+                      {selectedProject.gallery.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentGalleryIndex(index)}
+                          className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                            index === currentGalleryIndex 
+                              ? 'bg-white scale-125' 
+                              : 'bg-white/50 hover:bg-white/80'
+                          }`}
+                          aria-label={`Go to image ${index + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+                
+                {/* Image Counter */}
+                {selectedProject.gallery.length > 1 && (
+                  <div className="absolute top-3 right-3 bg-black/50 text-white px-2 py-1 rounded-full text-xs font-medium">
+                    {currentGalleryIndex + 1} / {selectedProject.gallery.length}
+                  </div>
+                )}
+              </div>
               
               {/* Status and Category Badges */}
               <div className="flex flex-wrap gap-2 mb-4">

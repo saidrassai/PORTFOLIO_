@@ -4,6 +4,7 @@ import Navigation from './components/ui/Navigation'
 import PageLoader from './components/ui/PageLoader'
 import ScrollToTop from './components/ui/ScrollToTop'
 import ScrollProgress from './components/ui/ScrollProgress'
+import AnnouncementBar from './components/ui/AnnouncementBar'
 import { initSmoothScrolling } from './utils/smoothScroll'
 
 // Lazy load heavy components
@@ -22,6 +23,7 @@ const SectionLoader = ({ height = "min-h-[400px]" }: { height?: string }) => (
 
 function App() {
   const [isLoading, setIsLoading] = useState(true)
+  const [isAnnouncementVisible, setIsAnnouncementVisible] = useState(true)
 
   // Initialize smooth scrolling
   useEffect(() => {
@@ -42,19 +44,22 @@ function App() {
         <ScrollProgress />
         
         {/* Fixed Navigation */}
-        <Navigation />
+        <Navigation hasAnnouncementBar={isAnnouncementVisible} />
+        
+        {/* Announcement Bar - Fixed under navbar */}
+        <AnnouncementBar onVisibilityChange={setIsAnnouncementVisible} />
         
         {/* Scroll to Top Arrow */}
         <ScrollToTop />
         
         {/* Main Content */}
         <main className="relative bg-white">
-        {/* Hero Section - Loads immediately */}
-        <section id="hero">
+        {/* Hero Section - Full viewport, positioned behind fixed headers */}
+        <section id="hero" className="relative -mt-[120px] pt-[120px]" style={{ marginTop: isAnnouncementVisible ? '-120px' : '-64px', paddingTop: isAnnouncementVisible ? '120px' : '64px' }}>
           <Hero />
         </section>
 
-        {/* Lazy loaded sections */}
+        {/* Other sections */}
         <section id="about">
           <Suspense fallback={<SectionLoader />}>
             <About />

@@ -313,16 +313,25 @@ const Contact = () => {
       className="pt-12 pb-20 px-4 sm:px-6 bg-white"
       data-theme="light"
     >
-      <div className="max-w-6xl mx-auto">
-        <h2 
+      <div className="max-w-6xl mx-auto">        <h2 
           ref={titleRef}
-          className="text-[3rem] sm:text-[4rem] md:text-[5rem] lg:text-[3.5rem] font-black uppercase tracking-[-0.02em] mb-12 sm:mb-16 pointer-events-none whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] text-gray-900 text-center"
+          className="text-[3rem] sm:text-[4rem] md:text-[5rem] lg:text-[3.5rem] font-black uppercase tracking-[-0.02em] mb-6 sm:mb-8 pointer-events-none whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] text-gray-900 text-center"
         >
           GET IN{' '}
           <span className="px-1 rounded" style={{ backgroundColor: '#FFEB3B', color: '#333446', paddingTop: '1px', paddingBottom: '1px' }}>
             TOUCH
           </span>
         </h2>
+
+        {/* Descriptive Text - Moved here from sidebar */}
+        <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+          <h3 className="font-medium text-xl sm:text-2xl mb-3 sm:mb-4 text-gray-900">Let's work together</h3>
+          <p className="text-neutral-600 leading-relaxed text-base sm:text-lg">
+            I'm always interested in hearing about new projects and opportunities.
+            Whether you're a company looking to hire, or you're looking for a collaborator
+            on your next project, I'd love to hear from you.
+          </p>
+        </div>
 
         <div className="grid lg:grid-cols-2 gap-8 sm:gap-12">
           {/* Contact Form */}
@@ -498,19 +507,8 @@ const Contact = () => {
               <p>• Your information is never shared with third parties</p>
               <p>• Form submissions are logged for security purposes</p>
             </div>
-          </form>
-
-          {/* Contact Info */}
+          </form>          {/* Contact Info */}
           <div ref={infoRef} className="space-y-6 sm:space-y-8">
-            <div>
-              <h3 className="font-medium text-lg mb-3 sm:mb-4">Let's work together</h3>
-              <p className="text-neutral-600 leading-relaxed text-sm sm:text-base">
-                I'm always interested in hearing about new projects and opportunities.
-                Whether you're a company looking to hire, or you're looking for a collaborator
-                on your next project, I'd love to hear from you.
-              </p>
-            </div>
-
             <div className="space-y-3 sm:space-y-4">
               {contactInfo.map((item, index) => (
                 <a
