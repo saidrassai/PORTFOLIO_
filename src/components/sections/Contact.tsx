@@ -219,15 +219,19 @@ const Contact = () => {
     // reCAPTCHA validation
     if (!recaptchaToken) {
       newErrors.recaptcha = 'Please complete the reCAPTCHA verification'
-    }
-
-    setErrors(newErrors)
+    }    setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    console.log('🔍 Form submission started')
+    console.log('📝 Form data:', formData)
+    console.log('🔒 reCAPTCHA token:', recaptchaToken ? 'Present' : 'Missing')
+    
     if (!validateForm()) {
+      console.log('❌ Form validation failed')
       return
     }
 
@@ -245,15 +249,26 @@ const Contact = () => {
       formBody.append('message', formData.message)
       formBody.append('g-recaptcha-response', recaptchaToken || '')
       
+      console.log('📤 Sending data:', formBody.toString())
+      console.log('🌐 Submitting to:', window.location.origin + '/')
+      
       const response = await fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: formBody.toString()
       })
       
+      console.log('📨 Response status:', response.status)
+      console.log('📨 Response headers:', [...response.headers.entries()])
+      
       if (!response.ok) {
+        const responseText = await response.text()
+        console.log('❌ Response body:', responseText)
         throw new Error(`HTTP error! status: ${response.status}`)
       }
+      
+      const responseText = await response.text()
+      console.log('✅ Success response:', responseText.substring(0, 200) + '...')
         // Reset form on success
       setFormData({ name: '', email: '', message: '', honeypot: '' })
       setRecaptchaToken(null)
