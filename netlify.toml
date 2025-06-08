@@ -76,10 +76,22 @@
     Content-Type = "font/woff"
     Cache-Control = "public, max-age=31536000, immutable"
 
-# Model files
+# Video files
 [[headers]]
-  for = "/models/*"
+  for = "/video/*"
   [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+[[headers]]
+  for = "*.webm"
+  [headers.values]
+    Content-Type = "video/webm"
+    Cache-Control = "public, max-age=2592000"
+
+[[headers]]
+  for = "*.mp4"
+  [headers.values]
+    Content-Type = "video/mp4"
     Cache-Control = "public, max-age=2592000"
 
 [[headers]]
@@ -113,19 +125,6 @@
   for = "*.svg"
   [headers.values]
     Content-Type = "image/svg+xml; charset=utf-8"
-
-# GLB/GLTF model files
-[[headers]]
-  for = "*.glb"
-  [headers.values]
-    Content-Type = "model/gltf-binary"
-    Cache-Control = "public, max-age=2592000"
-
-[[headers]]
-  for = "*.gltf"
-  [headers.values]
-    Content-Type = "model/gltf+json"
-    Cache-Control = "public, max-age=2592000"
 
 [context.production]
   command = "npm run build"
