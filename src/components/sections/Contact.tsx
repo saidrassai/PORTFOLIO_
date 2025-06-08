@@ -237,19 +237,18 @@ const Contact = () => {
       // Update rate limiting
       setSubmitAttempts(prev => prev + 1)
       setLastSubmitTime(Date.now())
-      
-      // Submit to Netlify Forms
-      const formDataToSend = new FormData()
-      formDataToSend.append('form-name', 'contact') // Must match the form name attribute
-      formDataToSend.append('name', formData.name)
-      formDataToSend.append('email', formData.email)
-      formDataToSend.append('message', formData.message)
-      formDataToSend.append('g-recaptcha-response', recaptchaToken || '')
+        // Submit to Netlify Forms - Use proper encoding
+      const formBody = new URLSearchParams()
+      formBody.append('form-name', 'contact') // Must match the form name attribute
+      formBody.append('name', formData.name)
+      formBody.append('email', formData.email)
+      formBody.append('message', formData.message)
+      formBody.append('g-recaptcha-response', recaptchaToken || '')
       
       const response = await fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(formDataToSend as any).toString()
+        body: formBody.toString()
       })
       
       if (!response.ok) {

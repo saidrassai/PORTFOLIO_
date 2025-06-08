@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contact Form Submission</title>
+</head>
+<body>
+    <!-- Static form for Netlify Forms detection -->
+    <form name="contact" method="POST" data-netlify="true" data-netlify-recaptcha="true">
+        <input type="hidden" name="form-name" value="contact" />
+        <input type="text" name="name" placeholder="Name" required />
+        <input type="email" name="email" placeholder="Email" required />
+        <textarea name="message" placeholder="Message" required></textarea>
+        <div data-netlify-recaptcha="true"></div>
+        <button type="submit">Send Message</button>
+    </form>
+    <script>
+        // Redirect to thank you page after submission
+        if (window.location.search.includes('submitted=true')) {
+            window.location.href = '/thank-you.html';
+        }
+    </script>
+</body>
+</html>
