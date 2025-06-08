@@ -49,7 +49,7 @@ interface SubmissionState {
 }
 
 // reCAPTCHA configuration
-const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || import.meta.env.VITE_RECAPTCHA_SITE_KEY_DEV || '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '6LcT9FYrAAAAAGiEnqygkW7t5oxGmJnshJfeVctu'
 
 const Contact = () => {
   const sectionRef = useRef<HTMLElement>(null)
@@ -224,7 +224,6 @@ const Contact = () => {
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -239,11 +238,23 @@ const Contact = () => {
       setSubmitAttempts(prev => prev + 1)
       setLastSubmitTime(Date.now())
       
-      // Here you would integrate with your backend service
-      // For example: Netlify Forms, EmailJS, or custom API
+      // Submit to Netlify Forms
+      const formDataToSend = new FormData()
+      formDataToSend.append('form-name', 'contact') // Must match the form name attribute
+      formDataToSend.append('name', formData.name)
+      formDataToSend.append('email', formData.email)
+      formDataToSend.append('message', formData.message)
+      formDataToSend.append('g-recaptcha-response', recaptchaToken || '')
       
-      // Simulate form submission with security checks
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      const response = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(formDataToSend as any).toString()
+      })
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
         // Reset form on success
       setFormData({ name: '', email: '', message: '', honeypot: '' })
       setRecaptchaToken(null)
@@ -258,7 +269,9 @@ const Contact = () => {
         isSubmitting: false,
         isSuccess: true,
         message: 'Thank you! Your message has been sent successfully. I\'ll get back to you soon.'
-      })        } catch {
+      })        } catch (error) {
+      console.error('Form submission error:', error)
+      
       // Reset reCAPTCHA on error
       setRecaptchaToken(null)
       if (recaptchaRef.current) {
@@ -333,9 +346,18 @@ const Contact = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12">
-          {/* Contact Form */}
-          <form ref={formRef} onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12">          {/* Contact Form */}
+          <form 
+            ref={formRef} 
+            onSubmit={handleSubmit} 
+            className="space-y-4 sm:space-y-6"
+            name="contact"
+            method="POST"
+            data-netlify="true"
+            data-netlify-recaptcha="true"          >
+            {/* Hidden input for Netlify Forms */}
+            <input type="hidden" name="form-name" value="contact" />
+            
             {/* Security Notice */}
             <div className="flex items-center gap-2 text-sm text-neutral-600 bg-neutral-50 p-3 rounded-lg border">
               <Shield className="h-4 w-4 text-green-600" />
