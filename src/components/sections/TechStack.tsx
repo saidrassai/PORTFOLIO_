@@ -162,7 +162,7 @@ const TechStack = () => {
       
       <div className="container mx-auto px-6 relative z-10">
         {/* Section Title */}
-        <ParallaxContent speed={0.8} scale={true}>
+        <ParallaxContent speed={0.8} scale={true} quickReveal={true}>
           <div className="text-center mb-12 sm:mb-16">
             <h2 
               ref={titleRef}

@@ -347,7 +347,7 @@ const Projects = () => {
       
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="relative z-10 w-full flex flex-col items-center px-4 sm:px-0">
-        {/* Title */}        <ParallaxContent speed={0.8} scale={true}>
+        {/* Title */}        <ParallaxContent speed={0.8} scale={true} quickReveal={true}>
           <h1 className="text-[3rem] sm:text-[4rem] md:text-[5rem] lg:text-[3.5rem] font-black uppercase tracking-[-0.02em] mb-6 sm:mb-8 pointer-events-none whitespace-nowrap font-['Arial_Black','Arial_Bold',Arial,sans-serif] text-gray-900">
             <span className="px-1 rounded" style={{ backgroundColor: '#FFEB3B', color: '#333446', paddingBottom: '1px' }}>PROJECTS</span>
           </h1>

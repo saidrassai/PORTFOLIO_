@@ -10,6 +10,7 @@ interface ParallaxContentProps {
   direction?: 'up' | 'down' | 'left' | 'right'
   scale?: boolean // Whether to add subtle scale effect
   rotate?: boolean // Whether to add subtle rotation
+  quickReveal?: boolean // Whether to add quick reveal animation when section comes into view
   className?: string
 }
 
@@ -19,15 +20,34 @@ const ParallaxContent = ({
   direction = 'up',
   scale = false,
   rotate = false,
+  quickReveal = false,
   className = ''
 }: ParallaxContentProps) => {
   const elementRef = useRef<HTMLDivElement>(null)
-
   useEffect(() => {
     const element = elementRef.current
     if (!element) return
 
     const ctx = gsap.context(() => {
+      // Quick reveal animation for titles when section comes into view
+      if (quickReveal) {
+        gsap.set(element, { opacity: 0, y: 30 })
+        
+        ScrollTrigger.create({
+          trigger: element,
+          start: "top 85%", // Trigger when element is 85% into viewport
+          end: "top 60%",   // Complete by the time it's 60% into viewport
+          onEnter: () => {
+            gsap.to(element, { 
+              opacity: 1, 
+              y: 0, 
+              duration: 0.8, 
+              ease: "power2.out" 
+            })
+          }
+        })
+      }
+
       // Calculate movement based on direction
       const getMovement = (progress: number) => {
         const distance = progress * 100 * (1 - speed)
@@ -40,6 +60,7 @@ const ParallaxContent = ({
         }
       }
 
+      // Parallax effect
       ScrollTrigger.create({
         trigger: element,
         start: "top bottom",
@@ -61,7 +82,7 @@ const ParallaxContent = ({
     }, elementRef)
 
     return () => ctx.revert()
-  }, [speed, direction, scale, rotate])
+  }, [speed, direction, scale, rotate, quickReveal])
 
   return (
     <div ref={elementRef} className={className}>
