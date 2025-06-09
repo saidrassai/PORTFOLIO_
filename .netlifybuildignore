@@ -1,0 +1,55 @@
+# Netlify Build Ignore Patterns
+# This file specifies what should NOT be deployed to production
+
+# Documentation Files
+*.md
+!README.md
+docs/
+MONITORING_*.md
+DEPLOYMENT_*.md
+PRODUCTION_*.md
+PROJECT_*.md
+FINAL_*.md
+NETLIFY_*.md
+TODO.md
+TROUBLESHOOTING_GUIDE.md
+
+# Development Scripts
+scripts/
+.github/
+.vscode/
+
+# Development Files
+*.txt
+*.backup
+backup_*/
+*.tmp
+*.temp
+
+# Environment Files (handled by Netlify environment variables)
+.env
+.env.*
+
+# Build Artifacts (not needed in deployment)
+.lighthouseci/
+coverage/
+
+# Development Dependencies
+node_modules/
+
+# Log Files
+*.log
+logs/
+
+# Editor Files
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Temporary Development Files
+todo3D.md
+scene.txt

@@ -3,6 +3,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import ReCAPTCHA from 'react-google-recaptcha'
 import { Send, Mail, MapPin, Phone, Github, Linkedin, Shield, Clock, AlertTriangle, CheckCircle } from 'lucide-react'
+import { trackFormSubmission, trackUserAction } from '../../utils/monitoring'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -224,8 +225,17 @@ const Contact = () => {
   }
     const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+      // Track form submission attempt
+    trackUserAction('form_submit_attempt', {
+      form_name: 'contact',
+      has_recaptcha: !!recaptchaToken
+    })
     
     if (!validateForm()) {
+      trackUserAction('form_validation_failed', {
+        form_name: 'contact',
+        error_count: Object.keys(errors).length
+      })
       return
     }
 
@@ -252,7 +262,14 @@ const Contact = () => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
-        // Reset form on success
+        // Track successful submission
+      trackFormSubmission('contact', true)
+      trackUserAction('form_submit_success', {
+        form_name: 'contact',
+        response_status: response.status
+      })
+      
+      // Reset form on success
       setFormData({ name: '', email: '', message: '', honeypot: '' })
       setRecaptchaToken(null)
       
@@ -266,8 +283,15 @@ const Contact = () => {
         isSubmitting: false,
         isSuccess: true,
         message: 'Thank you! Your message has been sent successfully. I\'ll get back to you soon.'
-      })        } catch (error) {
+      })    } catch (error) {
       console.error('Form submission error:', error)
+      
+      // Track failed submission
+      trackFormSubmission('contact', false)
+      trackUserAction('form_submit_error', {
+        form_name: 'contact',
+        error_message: error instanceof Error ? error.message : 'Unknown error'
+      })
       
       // Reset reCAPTCHA on error
       setRecaptchaToken(null)

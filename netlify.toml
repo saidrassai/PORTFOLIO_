@@ -146,3 +146,20 @@
   spam-filter = true
   # Enable notification emails
   notification_emails = ["rassai.said@ensi.ma"]
+
+# Ignore documentation and development files in production
+[build]
+  ignore = """
+    docs/**
+    *.md
+    scripts/**
+    .github/**
+    TODO.md
+    TROUBLESHOOTING_GUIDE.md
+    MONITORING_*.md
+    DEPLOYMENT_*.md
+    PRODUCTION_*.md
+    PROJECT_*.md
+    FINAL_*.md
+    NETLIFY_*.md
+  """

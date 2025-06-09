@@ -3,6 +3,8 @@ import { ExternalLink, Github, Code, Globe, Smartphone, Database, Palette, Activ
 import ParallaxBackground from '../ui/ParallaxBackground'
 import ParallaxContent from '../ui/ParallaxContent'
 import ParallaxFloatingElements from '../ui/ParallaxFloatingElements'
+import { trackProjectView } from '../../utils/monitoring'
+
 // Portfolio image will be referenced as /Project_Photos/portolio.png
 
 interface Project {
@@ -156,12 +158,14 @@ const Projects = () => {
     setTimeout(() => {
       setIsAnimating(false)    }, 800)
   }
-
   const handleImageClick = (project: Project, e: React.MouseEvent, position: string, index: number) => {
     e.stopPropagation()
     
     // Only show modal if card is in center position
     if (position === 'center') {
+      // Track project view
+      trackProjectView(project.title, 'view')
+      
       setSelectedProject(project)
       setShowDescription(true)
       // Block page scroll when modal opens
@@ -421,14 +425,16 @@ const Projects = () => {
 
                 {/* Project Links (visible on center card) */}
                 {isCenter && (
-                  <div className="absolute top-16 left-3 flex gap-2">
-                    {project.github && (
+                  <div className="absolute top-16 left-3 flex gap-2">                    {project.github && (
                       <a
                         href={project.github}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white backdrop-blur-sm border border-white/20 transition-all duration-200 hover:scale-110"
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          trackProjectView(project.title, 'github')
+                        }}
                       >
                         <Github size={16} />
                       </a>
@@ -439,7 +445,10 @@ const Projects = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white backdrop-blur-sm border border-white/20 transition-all duration-200 hover:scale-110"
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          trackProjectView(project.title, 'demo')
+                        }}
                       >
                         <ExternalLink size={16} />
                       </a>
